@@ -1,4 +1,4 @@
-# St. Lawrence Island Dictionary
+# St. Lawrence Island Yupik Dictionary
 
 This repository hosts files and conversion scripts related to the <i>St. Lawrence Island / Siberian Yupik Eskimo Dictionary</i> compiled by Linda Womkon Badten (Aghnaghaghpik), Vera Oovi Keneshiro (Uqiitlek), Marie Oovi (Uvegtu), and Christopher Koonooka (Petuwaq); edited by Steven A. Jacobson; and published by the Alaska Native Language Center at the University of Alaska Fairbanks in 2008.
 
