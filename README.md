@@ -38,7 +38,7 @@ The HTML files were produced using the following procedure:
 The [code](code) directory contains the following files:
 * [code/html2xml.py](html2xml.py)
 
-This Python script requires the [https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup](BeautifulSoup4) Python library, which can be installed in a local virtual environment as follows:
+This Python script requires the [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup) Python library, which can be installed in a local virtual environment as follows:
 
 ```
 python3 -m venv venv
