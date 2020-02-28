@@ -51,24 +51,67 @@ class Entry:
         self.coded_cyrillic = self.extract(1)
         
         self.raw_examples = self.extract(4)
-        self.examples = self.raw_examples.split("; ")
+        self.examples = self.raw_examples.strip().replace(' / ', '; ').split("; ") if len(self.raw_examples) > 0 else []
+        self.examples = [e.strip() for e in self.examples if len(e.strip()) > 0]
 
         if len(self.examples) > 0 and self.examples[0] == '<i>particle</i>':
             self.examples = self.examples[1:]
             self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>particle':
+            self.examples = self.examples[1:]
+            self.examples[0] = "<i>" + self.examples[0]
+            self.part_of_speech = "particle"
         elif len(self.examples) > 0 and self.examples[0] == '<i>adverbial particle</i>':
             self.examples = self.examples[1:]
             self.part_of_speech = "adverbial particle"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>emotional root</i>':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "emotional root"
+        elif len(self.examples) > 0 and self.examples[0].startswith('<i>emotional root:</i> '):
+            self.examples[0] = self.examples[0][len('<i>emotional root:</i> '):]
+            print(self.latin)
+            self.part_of_speech = "emotional root"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>postural root</i>':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "postural root"
+        elif len(self.examples) > 0 and self.examples[0] == 'postural root':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "postural root"
+        elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan (R)' and self.examples[1] == 'postural root</i>':
+            self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
+            self.part_of_speech = "postural root"
+        elif len(self.examples) > 0 and self.examples[0].startswith('<i>postural root:</i> '):
+            self.examples[0] = self.examples[0][len('<i>postural root:</i> '):]
+            self.part_of_speech = "postural root"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
+            self.part_of_speech = "noun"
         else:
             self.part_of_speech = None
 
         self.examples = [Example(example) for example in self.examples]
-        
+        self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
+        self.examples = [example for example in self.examples if len(example.english) > 0]
+
         self.combined_english_gloss = self.extract(17).split("; ")
 
+        self.etymology = self.extract(19)
+        self.semantic_code = self.extract(20)
+        self.source = self.extract(21)
+
+    @staticmethod
+    def replace_english_apostrophe(s):
+        import re
+        modifier_letter_apostrophe = '\u02BC'
+        for index in [m.start() for m in re.finditer(r"’|'", s)]:
+            if index-1 >= 0 and index+1 < len(s) and s[index-1].isalpha() and s[index+1].isalpha():
+                s = s[:index] + modifier_letter_apostrophe + s[index+1:]
+        return s
+
     def extract(self, index: int) -> str:
+
         result = self._fields[Entry.field_names[index]]
-        
+        result = result.strip()
+        result = Entry.replace_english_apostrophe(result)
         result = result.replace('\xa0','')
         
         result = re.sub(r'<span class="Apple-converted-space">\s*</span>', ' ', result)
@@ -117,25 +160,39 @@ class Entry:
         return f"""\
     <entry part-of-speech="{self.part_of_speech}">
     
-        <orthographic-form type="latin">{self.latin}</orthographic-form>
-        <orthographic-form type="cyrillic" code="{self.coded_cyrillic}">{self.cyrillic}</orthographic-form>
+        <forms>
+            <form script="latin"   >{self.latin}</form>
+            <form script="cyrillic">{self.cyrillic}</form>
+            <form script="jacobson">{self.coded_cyrillic}</form>
+        </forms>
     
         <glosses>
 {newline.join(['            <gloss lang="eng">' + gloss + '</gloss>' for gloss in self.combined_english_gloss])}
         </glosses>
 
-        <examples>
+        <notes>{(newline + newline.join([str(e) for e in self.notes])) if len(self.notes) > 0 else ""}
+        </notes>
 
-{newline.join([str(e) for e in self.examples])}
+        <examples>{(newline + newline + newline.join([str(e) for e in self.examples])) if len(self.examples) > 0 else ""}
         </examples>
+        
+        <source>{self.source}</source>
+        
+        <etymology>{self.etymology.replace('<', '&lt;')}</etymology>
+        
+        <semantic-code>{self.semantic_code}</semantic-code>
         
     </entry>
 """
+# {"        " + "<source>" + self.source + "</source>" + newline if len(self.source) > 0 else ""}
 
 
 class Example:
 
     def __init__(self, example_string: str):
+        if len(example_string) == 0:
+            raise ValueError("Examples must be non-zero in length")
+        self.raw_string = example_string
         yupik_start = 0
         yupik_end = example_string.find('‘') - 1 if '‘' in example_string else len(example_string)
         english_start = yupik_end + 1 if '‘' in example_string else len(example_string)
@@ -147,6 +204,7 @@ class Example:
         self.citation = example_string[citation_start:citation_end].strip()
 
     def __str__(self):
+
         if len(self.yupik) == 0 and len(self.english) == 0 and len(self.citation) == 0:
             return ""
 
@@ -159,6 +217,22 @@ class Example:
             result += "                <citation>" + self.citation + "</citation>\n"
         result += "            </example>\n"
         return result
+
+    def __repr__(self):
+        return f"Example({self.raw_string})"
+
+
+class Note:
+
+    def __init__(self, value: str):
+        self.value: str = value
+
+    def __str__(self):
+
+        if len(self.value) == 0:
+            return ""
+        else:
+            return "            <note>" + self.value + "</note>"
 
 
 class HtmlEntry:
@@ -224,10 +298,20 @@ class HtmlDictionary:
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
-        print(f"Usage:\t{sys.argv[0]} lexicon.html", file=sys.stderr, flush=True)
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print(f"Usage:\t{sys.argv[0]} lexicon.html (output.xml)", file=sys.stderr, flush=True)
         sys.exit(0)
     
     else:
-        for entry in HtmlDictionary(filename=sys.argv[1]):
-            print(Entry(entry))
+        dictionary = HtmlDictionary(filename=sys.argv[1])
+        if len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '-'):
+            for html_entry in dictionary:
+                entry = Entry(html_entry)
+                if len(entry.latin) > 0:
+                    print(entry)
+        else:
+            with open(sys.argv[2], 'wt') as xml:
+                for html_entry in dictionary:
+                    entry = Entry(html_entry)
+                    if len(entry.latin) > 0:
+                        print(entry, file=xml)

@@ -91,7 +91,7 @@ class TestKatamqunHtmlEntry(unittest.TestCase):
     def test_alphabetization_field_a(self):
         self.assertEqual(self.entry[25], "katamqun")
 
-    def test_alphabetization_field_a(self):
+    def test_alphabetization_field_b(self):
         self.assertEqual(self.entry[26], "katamqun")
 
     def test_cyrillic(self):
@@ -131,6 +131,12 @@ class TestKatamqunEntry(unittest.TestCase):
 
     def test_part_of_speech(self):
         self.assertEqual(self.entry.part_of_speech, """particle""")
+
+    def test_source(self):
+        self.assertEqual("", self.entry.source)
+
+    def test_etymology(self):
+        self.assertEqual("< katam=qun", self.entry.etymology)
 
 
 if __name__ == '__main__':
