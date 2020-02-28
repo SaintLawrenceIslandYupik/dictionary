@@ -5,6 +5,7 @@ import re
 import sys
 from bs4 import BeautifulSoup
 
+
 class Entry:
 
     field_names = [
@@ -37,7 +38,6 @@ class Entry:
         'alphabetization field B',
         'CSY word (Cyrillic)'
     ]
-
 
     def __init__(self, *, fields: List[str]):
         if len(fields) != 28:
@@ -89,11 +89,11 @@ class Entry:
             count_close = result.count(closing_tag)
             
             if count_open > count_close:
-                #print(f"Too many {opening_tag}:\t{count_open} > {count_close}\t{result}")
+                # print(f"Too many {opening_tag}:\t{count_open} > {count_close}\t{result}")
                 result = result + closing_tag
             
             if count_open < count_close:
-                #print(f"Too many {closing_tag}:\t{count_open} < {count_close}\t{result}")
+                # print(f"Too many {closing_tag}:\t{count_open} < {count_close}\t{result}")
                 result = opening_tag + result
             
             if result.find(closing_tag) < result.find(opening_tag):
@@ -120,12 +120,14 @@ class Entry:
     </entry>
 """
 
+
 def load(*, filename: str) -> BeautifulSoup:
     with open(filename) as html_file:
         print(f"Loading file {filename} ... ", end="", flush=True, file=sys.stderr)
         html = BeautifulSoup(html_file, "html.parser")
         print("done.", end="\n", flush=True, file=sys.stderr)
         return html
+
 
 def parse(*, filename: str):
     html = load(filename=sys.argv[1])
@@ -139,10 +141,10 @@ def parse(*, filename: str):
         body = ''.join([str(item) for item in entry.contents])
         parts = pattern.split(body)
         if len(parts) == 26:  # base
-            parts.insert(-3, '') # Insert empty string for 'postbase head form'
-            parts.insert(-3, '') # Insert empty string for 'postbase alphabetization form'
+            parts.insert(-3, '')  # Insert empty string for 'postbase head form'
+            parts.insert(-3, '')  # Insert empty string for 'postbase alphabetization form'
         elif len(parts) == 27:  # post-base
-            parts.insert(-2, '') # Insert empty string for 'alphabetization field A'
+            parts.insert(-2, '')  # Insert empty string for 'alphabetization field A'
         
         entry = Entry(fields=parts)
         print(entry)
