@@ -131,7 +131,7 @@ def parse(*, filename: str):
     html = load(filename=sys.argv[1])
 
     entries = html.body.find_all("p")
-    print(len(entries))
+    print(f"Identified {len(entries)} entries in {filename}.", flush=True, file=sys.stderr)
     
     pattern = re.compile(r'<span class="Apple-tab-span">\s*</span>')
     
