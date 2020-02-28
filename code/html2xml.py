@@ -63,7 +63,6 @@ class Entry:
             self.part_of_speech = "particle"
         elif len(self.examples) > 1 and self.examples[1] == '<i>particle':
             self.examples = [self.examples[0]] + self.examples[2:]
-            print(self.latin)
             self.part_of_speech = "particle"
         elif len(self.examples) > 0 and self.examples[0] == 'particle':
             self.examples = self.examples[1:]
@@ -101,8 +100,16 @@ class Entry:
         elif len(self.examples) > 0 and self.examples[0].startswith('<i>postural root:</i> '):
             self.examples[0] = self.examples[0][len('<i>postural root:</i> '):]
             self.part_of_speech = "postural root"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>dimensional root</i>':
+            self.examples = self.examples[1:]
+            print(self.latin)
+            self.part_of_speech = "dimensional root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
-            self.part_of_speech = "noun"
+            if self.latin[0].isupper():
+                self.part_of_speech = "proper noun"
+                print(self.latin)
+            else:
+                self.part_of_speech = "noun"
         else:
             self.part_of_speech = None
 
