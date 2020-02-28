@@ -61,6 +61,25 @@ class Entry:
             self.examples = self.examples[1:]
             self.examples[0] = "<i>" + self.examples[0]
             self.part_of_speech = "particle"
+        elif len(self.examples) > 1 and self.examples[1] == '<i>particle':
+            self.examples = [self.examples[0]] + self.examples[2:]
+            print(self.latin)
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0] == 'particle':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0] == 'particle</i>':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan (R)' and self.examples[1] == 'particle</i>':
+            self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan (R,V&amp;E)' and self.examples[1] == 'particle</i>':
+            self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan' and self.examples[1] == 'particle</i>':
+            self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
+            self.part_of_speech = "particle"
         elif len(self.examples) > 0 and self.examples[0] == '<i>adverbial particle</i>':
             self.examples = self.examples[1:]
             self.part_of_speech = "adverbial particle"
@@ -69,7 +88,6 @@ class Entry:
             self.part_of_speech = "emotional root"
         elif len(self.examples) > 0 and self.examples[0].startswith('<i>emotional root:</i> '):
             self.examples[0] = self.examples[0][len('<i>emotional root:</i> '):]
-            print(self.latin)
             self.part_of_speech = "emotional root"
         elif len(self.examples) > 0 and self.examples[0] == '<i>postural root</i>':
             self.examples = self.examples[1:]
