@@ -54,7 +54,27 @@ class Entry:
         self.examples = self.raw_examples.strip().replace(' / ', '; ').split("; ") if len(self.raw_examples) > 0 else []
         self.examples = [e.strip() for e in self.examples if len(e.strip()) > 0]
 
-        if len(self.examples) > 0 and self.examples[0] == '<i>particle</i>':
+        if ((len(self.examples) > 0 and (self.examples[0] == '<i>demonstrative adverb base</i>' or
+                                         self.examples[0] == '<i>demonstrative adverb, localis case' or
+                                         self.examples[0] == '<i>extended demonstrative pronoun</i>' or
+                                         self.examples[0] == '<i>extended demonstrative pronoun' or
+                                         self.examples[0] == '<i>obscured demonstrative base' or
+                                         self.examples[0] == '<i>obscured demonstrative pronoun' or
+                                         self.examples[0] == '<i>restricted demonstrative pronoun' or
+                                         self.examples[0] == 'obscured demonstrative pronoun' or
+                                         self.examples[0] == '<i>interrogative demonstrative adverb</i>')) or
+            (len(self.examples) > 1 and (self.examples[1] == '<i>extended demonstrative pronoun</i>' or
+                                         self.examples[1] == '<i>demonstrative pronoun' or
+                                         self.examples[1] == '<i>extended demonstrative pronoun' or
+                                         self.examples[1] == '<i>restricted demonstrative pronoun</i>'))):
+            self.part_of_speech = "demonstrative"
+        elif len(self.examples) > 0 and (self.examples[0] == '<i>essentially a particle</i>' or
+                                         self.examples[0] == '<i>particle (?)</i>' or
+                                         self.examples[0] == '<i>effectively a particle</i>' or
+                                         self.examples[0] == '<i>particle (perhaps two different particles)' or
+                                         self.examples[0] == '<i>particle (actually inflected form)'):
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>particle</i>':
             self.examples = self.examples[1:]
             self.part_of_speech = "particle"
         elif len(self.examples) > 0 and self.examples[0] == '<i>particle':
@@ -70,6 +90,12 @@ class Entry:
         elif len(self.examples) > 0 and self.examples[0] == 'particle</i>':
             self.examples = self.examples[1:]
             self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0].startswith('<i>particle, '):
+            self.examples[0] = '<i>' + self.examples[0][len('<i>particle, '):]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and self.examples[0].startswith('<i>particle:</i> '):
+            self.examples[0] = self.examples[0][len('<i>particle:</i> '):]
+            self.part_of_speech = "particle"
         elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan (R)' and self.examples[1] == 'particle</i>':
             self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
             self.part_of_speech = "particle"
@@ -79,7 +105,32 @@ class Entry:
         elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan' and self.examples[1] == 'particle</i>':
             self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
             self.part_of_speech = "particle"
-        elif len(self.examples) > 0 and self.examples[0] == '<i>adverbial particle</i>':
+        elif len(self.examples) > 1 and self.examples[0] == '<i>Chukotkan' and self.examples[1] == 'particle':
+            self.examples = [self.examples[0] + "</i>"] + self.examples[2:]
+            self.part_of_speech = "particle"
+        elif len(self.examples) > 0 and (self.examples[0] == 'exclamatory particle</i>' or
+                                         self.examples[0] == '<i>exclamatory particle</i>' or
+                                         self.examples[0] == '<i>exclamatory particle'):
+            self.examples = self.examples[1:]
+            self.part_of_speech = "exclamatory particle"
+        elif len(self.examples) > 1 and (self.examples[1] == 'exclamatory particle</i>' or
+                                         self.examples[1] == '<i>exclamatory particle</i>' or
+                                         self.examples[1] == '<i>exclamatory particle'):
+            self.examples = [self.examples[0]] + self.examples[2:]
+            self.part_of_speech = "exclamatory particle"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>exclamatory particle said when one is about to lift a heavy object</i>':
+            self.examples[0] = '<i>said when one is about to lift a heavy object</i>'
+            self.part_of_speech = 'exclamatory particle'
+        elif len(self.examples) > 0 and self.examples[0].startswith('<i>exclamatory particle:</i> pinighhalek kiigmi uqfigmi'):
+            self.examples[0] = 'pinighhalek kiigmi uqfigmi'
+            self.part_of_speech = 'exclamatory particle'
+        elif len(self.examples) > 0 and self.examples[0] == '<i>conjunctive particle</i>':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "conjunctive particle"
+        elif len(self.examples) > 0 and self.examples[0] == '<i>interjectional particle</i>':
+            self.examples = self.examples[1:]
+            self.part_of_speech = "interjectional particle"
+        elif len(self.examples) > 0 and (self.examples[0] == '<i>adverbial particle</i>' or self.examples[0] == '<i>adverbial particle'):
             self.examples = self.examples[1:]
             self.part_of_speech = "adverbial particle"
         elif len(self.examples) > 0 and self.examples[0] == '<i>emotional root</i>':
@@ -102,16 +153,22 @@ class Entry:
             self.part_of_speech = "postural root"
         elif len(self.examples) > 0 and self.examples[0] == '<i>dimensional root</i>':
             self.examples = self.examples[1:]
-            print(self.latin)
+            #print(self.latin)
             self.part_of_speech = "dimensional root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
             if self.latin[0].isupper():
                 self.part_of_speech = "proper noun"
-                print(self.latin)
+                #print(self.latin)
             else:
                 self.part_of_speech = "noun"
         else:
             self.part_of_speech = None
+
+        for example in self.examples:
+            if '<i>as a particle:</i>' in example or '<i>also a particle:</i>' in example or '<i>also functions as aparticle:</i>' in example:
+                self.part_of_speech += '; particle'
+            if '<i>adverbial particle:</i> esghaghlleqamken unaami' in example:
+                self.part_of_speech += '; adverbial particle'
 
         self.examples = [Example(example) for example in self.examples]
         self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
