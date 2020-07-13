@@ -46,10 +46,10 @@ class YupikBase:
 
     def __init__(self, parts: List[str]):
         self.part_of_speech = ""
-        self.latin = parts[0].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip()
-        if self.latin.endswith(','):
-            self.latin = self.latin[:-1]
-        self.cyrillic = parts[1].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip()
+        self.latin = [l.strip() for l in parts[0].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().split(',')]
+        #if self.latin.endswith(','):
+        #    self.latin = self.latin[:-1]
+        self.cyrillic = [c.strip() for c in parts[1].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().split(',')]
         self.coded_cyrillic = parts[2].strip()
         self.english_gloss_combined = parts[3].strip()
         self.english_gloss = list()
@@ -177,13 +177,13 @@ class YupikBase:
             self.examples = self.examples[1:]
             #print(self.latin)
             self.part_of_speech = "dimensional root"
-        elif len(self.latin) > 0 and self.latin[0].isalpha() and (self.latin[-1].isalpha() or self.latin[-1] == '*' or self.latin.endswith('(t)')):
-            if self.latin[0].isupper():
+        elif len(self.latin[0]) > 0 and self.latin[0][0].isalpha() and (self.latin[0][-1].isalpha() or self.latin[0][-1] == '*' or self.latin[0].endswith('(t)')):
+            if self.latin[0][0].isupper():
                 self.part_of_speech = "proper noun"
                 #print(self.latin)
             else:
                 self.part_of_speech = "noun"
-        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == '-':
+        elif len(self.latin[0]) > 0 and self.latin[0][0].isalpha() and self.latin[0][-1] == '-':
             self.part_of_speech = "verb"
         else:
             raise ValueError(f"Unable to determine part of speech for {self.latin}")
@@ -204,17 +204,15 @@ class YupikBase:
     <entry part-of-speech="{self.part_of_speech}">
     
         <forms>
-            <form script="latin"   >{self.latin}</form>
-            <form script="cyrillic">{self.cyrillic}</form>
+{newline.join(['            <form script="latin">' + form + '</form>' for form in self.latin])}
+{newline.join(['            <form script="cyrillic">' + form + '</form>' for form in self.cyrillic])}
         </forms>
     
         <glosses>
 {newline.join(['            <gloss lang="eng">' + gloss + '</gloss>' for gloss in self.english_gloss])}
         </glosses>  
 
-        <examples>
-            <raw>{self.raw_examples}</raw>{(newline + newline.join([str(e) for e in self.examples])) if len(self.examples) > 0 else ""}
-        </examples>
+        <examples-etc>{self.raw_examples}</examples-etc>
         
         <source>{self.source}</source>
         
@@ -224,6 +222,7 @@ class YupikBase:
         
     </entry>
 """
+#{(newline + newline.join([str(e) for e in self.examples])) if len(self.examples) > 0 else ""}
 #            <form script="jacobson">{self.coded_cyrillic}</form>
 
         
