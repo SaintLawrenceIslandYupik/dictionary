@@ -68,6 +68,38 @@ The raw XML files were produced using the following procedure:
 4. In *Specify Field Order for Export*, all fields were selected. The fields were listed in the *Field export order* in case-insensitive alphabetical order.
 5. The file was exported.
 
+#### XLSX generation procedure
+
+The XLSX files were produced using the following procedure:
+1. The relevant **Filemaker Pro** file was opened.
+2. Within **Filemaker Pro**, the *Save/Send Records As... Excel* command was run.
+
+Each line in the resulting XLSX file contains one dictionary entry from the **Filemaker Pro** file. NOTE: A few fields contain the newline character.
+
+#### ODS generation procedure
+
+The ODS files were produced using the following procedure:
+1. The relevant **Filemaker Pro** file was opened.
+2. Within **Filemaker Pro**, the *Save/Send Records As... Excel* command was run.
+3. The newly created XLSX file was open using **Microsoft Excel** for Mac version 16.38.
+4. Within **Microsoft Excel**, the **Save As...** command was run, selecting **OpenDocument Spreadsheet (.ods)** as the file format.
+
+Each line in the resulting ODS file contains one dictionary entry from the **Filemaker Pro** file. NOTE: A few fields contain the newline character.
+
+
+#### TSV generation procedure
+
+The TSV files were produced using the following procedure:
+1. The relevant **Filemaker Pro** file was opened.
+2. Within **Filemaker Pro**, the *Save/Send Records As... Excel* command was run.
+3. The newly created XLSX file was open using **Microsoft Excel** for Mac version 16.38.
+4. Within **Microsoft Excel**, the **Save As...** command was run, selecting **OpenDocument Spreadsheet (.ods)** as the file format.
+5. The newly created ODS file was opened using **LibreOffice** version 6.0.6.2
+6. Within **LibreOffice**, the **Find & Replace** command was chosen.
+7. Within the **Find & Replace** dialog box, with **Regular expressions** checked, where the **Find** value was \n and the **Replace** value was four space characters, **Replace All** was run.
+8. Within **LibreOffice**, the **Save As...** command was run, selecting **Text CSV (.csv)** as the file type. The **Edit Filter Settings** box was checked. During export, the character set was **Unicode (UTF-8)**, the Field delimiter was **{Tab}**, the String delimiter was set to the empty string, and the remaining checkboxes were unchecked.
+
+Each line in the resulting TSV file contains one dictionary entry from the **Filemaker Pro** file. NOTE: No fields in this file contain the newline character.
 
 
 
