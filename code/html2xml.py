@@ -266,6 +266,8 @@ class Entry:
         
     </entry>
 """
+#        <raw-fields>{(newline + newline + newline.join([str(e) for e in self._fields.values()]))}
+#        </raw-fields>
 # {"        " + "<source>" + self.source + "</source>" + newline if len(self.source) > 0 else ""}
 
 
