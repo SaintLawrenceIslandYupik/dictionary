@@ -44,12 +44,20 @@ class Example:
 
 class YupikBase:
 
-    def __init__(self, parts: List[str]):
+    def __init__(self, parts: List[str], id: int):
+        self.id = id
         self.part_of_speech = ""
-        self.latin = [l.strip() for l in parts[0].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().split(',')]
+        self.latin = [l.strip() for l in parts[0].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().replace(' / ', ', ').replace('; ', ', ').split(',')]
         #if self.latin.endswith(','):
         #    self.latin = self.latin[:-1]
-        self.cyrillic = [c.strip() for c in parts[1].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().split(',')]
+        self.cyrillic = [c.strip() for c in parts[1].replace("1", "").replace("2", "").replace("3", "").replace("4", "").replace("5", "").strip().replace('; ', ', ').replace(' -- ', ', ').replace('- ', '-, ').replace('. ', ', ').split(',')]
+        for i in range(len(self.latin)):
+            if self.latin[i].endswith("ae"):
+                self.latin[i] = self.latin[i][:-2] + "e"
+        for i in range(len(self.cyrillic)):
+            if self.cyrillic[i].endswith("аы"):
+                self.cyrillic[i] = self.cyrillic[i][:-2] + "ы"
+        
         self.coded_cyrillic = parts[2].strip()
         self.english_gloss_combined = parts[3].strip()
         self.english_gloss = list()
@@ -74,6 +82,12 @@ class YupikBase:
         self.semantic_code = parts[14].strip()
         self.alphabetization_field_a = parts[15].strip()
         self.alphabetization_field_b = parts[16].strip()
+        for i in range(len(self.latin)):
+            if self.latin[i].endswith('-'):
+                self.latin[i] = self.latin[i][:-1]
+        for i in range(len(self.cyrillic)):
+            if self.cyrillic[i].endswith('-'):
+                self.cyrillic[i] = self.cyrillic[i][:-1]
     
     def _identify_part_of_speech(self):
         if ((len(self.examples) > 0 and (self.examples[0] == 'demonstrative adverb base' or
@@ -197,11 +211,20 @@ class YupikBase:
                 s = s[:index] + modifier_letter_apostrophe + s[index+1:]
         return s
     
+    def compound_word():
+        for form in self.latin + self.cyrillic:
+            if " " in form:
+                return True
+        return False
+    
     def __str__(self):
+        return self.xml()
+        
+    def xml(self):
         newline = "\n"
         spaces = "        "
         return f"""\
-    <entry part-of-speech="{self.part_of_speech}">
+    <entry lang="ess" id="{f'ESSB{self.id:04}'}" part-of-speech="{self.part_of_speech}">
     
         <forms>
 {newline.join(['            <form script="latin">' + form + '</form>' for form in self.latin])}
@@ -234,6 +257,7 @@ class YupikBases:
         self.headers = []
         blank_lines = 0
         alphabet_headers = 0
+        id = 0
         with open(filename) as tsv_file:
             for line in tsv_file:
                 entry = line.strip().split("\t")
@@ -245,7 +269,8 @@ class YupikBases:
                     if len(self.headers) == 0:
                         self.headers = entry
                     else:
-                        self.entry.append(YupikBase(entry))
+                        id += 1
+                        self.entry.append(YupikBase(entry, id))
                 else:
                     raise ValueError("UnexpectedSize")
                     
@@ -279,6 +304,10 @@ if __name__ == "__main__":
         if len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '-'):
             for entry in dictionary:
                 print(entry)
+#                 for l in entry.latin + entry.cyrillic:
+#                     if ' ' in l:
+#                         print(entry)
+#                         break
                     
         else:
             with open(sys.argv[2], 'wt') as xml:
