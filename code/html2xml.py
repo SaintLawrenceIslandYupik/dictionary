@@ -179,6 +179,10 @@ class Entry:
         self.etymology = self.extract(19)
         self.semantic_code = self.extract(20)
         self.source = self.extract(21)
+        
+        self.alphabetizationA = self.extract(25)
+        self.alphabetizationB = self.extract(26)
+        
 
     @staticmethod
     def replace_english_apostrophe(s):
