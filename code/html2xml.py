@@ -161,6 +161,20 @@ class Entry:
                 #print(self.latin)
             else:
                 self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[0].isupper():
+            self.part_of_speech = "Proper Noun"
+        elif len(self.latin) > 0 and self.latin[0] == "<" and self.latin[3].isalpha() and self.latin[3].isupper():
+            self.part_of_speech = "Proper Noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == "*":
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin.find("<sup>e</sup>") != -1:
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin.find("-") == -1 and re.match(r"<sup>\d</sup>", self.latin) != False:
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == "-":
+            self.part_of_speech = "verb"
+        elif len(self.latin) > 0 and "-" in self.latin:
+            self.part_of_speech = "verb"
         else:
             self.part_of_speech = None
 
@@ -201,7 +215,32 @@ class Entry:
         result = result.replace('\xa0','')
         
         result = re.sub(r'<span class="Apple-converted-space">\s*</span>', ' ', result)
-        
+        result = re.sub(r'(<span class="s\d{1}">)(.*?)(</span>)', r'\2', result)
+        result = re.sub(r'<span class="s\d{1}">', '', result)
+        result = re.sub(r'<span class="Apple-converted-space">', '', result)
+
+        #individual case replacements for <span class="s2> etc"
+        #result = result.replace('<span class="s2">perhaps from Russian </span>[kt,<span class="s2"> (xleb) ‘bread’, perhaps via Chukchi qlevan, qlep,<span class="Apple-converted-space">  </span>‘bread’', 'perhaps from Russian [kt, (xleb) ‘bread’, perhaps via Chukchi qlevan, qlep, ‘bread’')
+        #result = result.replace('<span class="s2">probably from Russian </span>[kt,<span class="s2"> (xleb) ’bread’, probably via Chukchi qlevan, qlep ‘bread’ <span class="Apple-tab-span">	</span></span>', 'probably from Russian [kt, (xleb) ‘bread’, probably via Chukchi qlevan, qlep ‘bread’ <span class="Apple-tab-span">	</span>')
+
+        #result = result.replace('<span class="s2"><b><sup>1<span class="Apple-tab-span">	</span></sup></b></span>', '<b><sup>1<span class="Apple-tab-span">	</span></sup></b>')
+        #result = result.replace('<span class="s2">to step with big strides (as in a certain competition)</span><span class="s7">', 'to step with big strides (as in a certain competition)')
+        #result = result.replace('<span class="s2">1994)</span>', '1994)')
+        #result = result.replace('<span class="s2"><b><sup>e1', '<b><sup>e1')
+        #result = result.replace('<span class="s2"><b><sup>1', '<b><sup>1')
+        #result = result.replace('<span class="s2"><b><sup>2', '<b><sup>2')
+        #result = result.replace('<span class="s2"><b><sup>3', '<b><sup>3')
+
+        #individual case replacements for stray "s where there should be “ or ”
+        result = result.replace('“<i>Awalmiggaghmeng</i> saghnaaqitek," piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.', '“<i>Awalmiggaghmeng</i> saghnaaqitek,” piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.')
+        result = result.replace('Pimakanga uyughani, "<i>Iitek</i> tazinga aghnangusimayaghamken.”', 'Pimakanga uyughani, “<i>Iitek</i> tazinga aghnangusimayaghamken.”')
+        result = result.replace('"Aa-ha-ha-haa, sangantuq-aa atkugllaka aallaataghsigu?', '“Aa-ha-ha-haa, sangantuq-aa atkugllaka aallaataghsigu?”')
+        result = result.replace('… pengegniighutaaten. Masingka <i>nemetwhayaaghtaaten</i>."', '“… pengegniighutaaten. Masingka <i>nemetwhayaaghtaaten</i>.”')
+        result = result.replace('"Kii nutaan repall <i>neqetuten</i>” "Aa, nutaan repall <i>neqetunga</i>."', '“Kii nutaan repall <i>neqetuten</i>” “Aa, nutaan repall <i>neqetunga</i>.”')
+        result = result.replace('"Waamtamken, nayagitunga avangitunga." "Uuk, iqlengalghiitenqun.', '“Waamtamken, nayagitunga avangitunga.” “Uuk, iqlengalghiitenqun.')
+        result = result.replace('"Aa, sakun tagistek?" "Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….', '“Aa, sakun tagistek?” “Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….”')
+        result = result.replace('"Kaay aqsan <i>aafkaghllequq</i>."', '“Kaay aqsan <i>aafkaghllequq</i>.”')
+
         result = result.replace('yu<u>k', 'yu(u)k')
         
         if result.startswith('</i>') or result.startswith('</b>'):
