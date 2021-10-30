@@ -18,9 +18,9 @@ class JsonEntry:
 
 
     def __str__(self):
-        gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + '],'
-        note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  '],'
-        example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + '],'
+        gloss_string = '[' + ", ".join([f"'{gloss}'" for gloss in self.entry.combined_english_gloss]) + '],'
+        note_string = '[' + ", ".join([f"'{gloss}'" for gloss in self.entry.notes]) +  '],'
+        example_string = '[' + ", ".join([f"'{gloss}'" for gloss in self.entry.examples]) + '],'
         
 
         note_string = self.listFormat(note_string)
@@ -55,13 +55,13 @@ class JsonEntry:
         #format examples
         result = re.sub(r"\s+<example>\n\s*", "", result)
         result = result.replace("</example>\n", "")
-        result = result.replace("<yupik-example>", "<span class='yupik_ex'>")
+        result = result.replace("<yupik-example>", '<span class="yupik_ex">')
         result = result.replace("</yupik-example>", "</span>")
         result = result.replace(r"</yupik-example>\n\s*", "</span>")
-        result = result.replace("<english-example>", "<span class='english_ex'>")
+        result = result.replace("<english-example>", '<span class="english_ex">')
         result = re.sub(r"</english-example>\n\s*", "</span>", result)
         result = result.replace("</english-example>\n", "</span>")
-        result = result.replace("<citation>", "\n\t\t<span class='citation'>")
+        result = result.replace("<citation>", '\n\t\t<span class="citation">')
         result = re.sub(r"</citation>\n\s*", "</span>", result)
        #result = result.replace("</citation>", "</span>")
         return result
