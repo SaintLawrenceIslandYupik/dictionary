@@ -219,18 +219,6 @@ class Entry:
         result = re.sub(r'<span class="s\d{1}">', '', result)
         result = re.sub(r'<span class="Apple-converted-space">', '', result)
 
-        #individual case replacements for <span class="s2> etc"
-        #result = result.replace('<span class="s2">perhaps from Russian </span>[kt,<span class="s2"> (xleb) ‘bread’, perhaps via Chukchi qlevan, qlep,<span class="Apple-converted-space">  </span>‘bread’', 'perhaps from Russian [kt, (xleb) ‘bread’, perhaps via Chukchi qlevan, qlep, ‘bread’')
-        #result = result.replace('<span class="s2">probably from Russian </span>[kt,<span class="s2"> (xleb) ’bread’, probably via Chukchi qlevan, qlep ‘bread’ <span class="Apple-tab-span">	</span></span>', 'probably from Russian [kt, (xleb) ‘bread’, probably via Chukchi qlevan, qlep ‘bread’ <span class="Apple-tab-span">	</span>')
-
-        #result = result.replace('<span class="s2"><b><sup>1<span class="Apple-tab-span">	</span></sup></b></span>', '<b><sup>1<span class="Apple-tab-span">	</span></sup></b>')
-        #result = result.replace('<span class="s2">to step with big strides (as in a certain competition)</span><span class="s7">', 'to step with big strides (as in a certain competition)')
-        #result = result.replace('<span class="s2">1994)</span>', '1994)')
-        #result = result.replace('<span class="s2"><b><sup>e1', '<b><sup>e1')
-        #result = result.replace('<span class="s2"><b><sup>1', '<b><sup>1')
-        #result = result.replace('<span class="s2"><b><sup>2', '<b><sup>2')
-        #result = result.replace('<span class="s2"><b><sup>3', '<b><sup>3')
-
         #individual case replacements for stray "s where there should be “ or ”
         result = result.replace('“<i>Awalmiggaghmeng</i> saghnaaqitek," piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.', '“<i>Awalmiggaghmeng</i> saghnaaqitek,” piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.')
         result = result.replace('Pimakanga uyughani, "<i>Iitek</i> tazinga aghnangusimayaghamken.”', 'Pimakanga uyughani, “<i>Iitek</i> tazinga aghnangusimayaghamken.”')
@@ -329,6 +317,12 @@ class Example:
         self.yupik = example_string[yupik_start:yupik_end].strip()
         self.english = example_string[english_start:english_end].strip()
         self.citation = example_string[citation_start:citation_end].strip()
+        self.yupik = self.yupik.replace("'", "&#39;")
+        self.yupik = self.yupik.replace('"', "&#34;")
+        self.english = self.english.replace("'", "&#39;")
+        self.english = self.english.replace('"', "&#34;")
+        self.citation = self.citation.replace("'", "&#39;")
+        self.citation = self.citation.replace('"', "&#34;")
 
     def __str__(self):
 
@@ -353,6 +347,9 @@ class Note:
 
     def __init__(self, value: str):
         self.value: str = value
+
+        self.value = self.value.replace("'", "&#39;")
+        self.value = self.value.replace('"', "&#34;")
 
     def __str__(self):
 
