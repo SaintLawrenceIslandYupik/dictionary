@@ -23,7 +23,7 @@ def tokenize(word):
     '''
 
     GRAPHEMES = ['Ngngw', 'ngngw', 'Ghhw', 'ghhw', 'Ngng', 'ngng',
-                 'Ghh', 'ghh', 'Ghw', 'ghw', 'Ngw', 'ngw',
+                 'Ghh', 'gh', 'Ghw', 'ghw', 'Ngw', 'ngw',
                  'Gg', 'gg', 'Gh', 'gh', 'Kw', 'kw', 'Ll', 'll',
                  'Mm', 'mm', 'Ng', 'ng', 'Nn', 'nn', 'Qw', 'qw',
                  'Rr', 'rr', 'Wh', 'wh',
@@ -130,8 +130,8 @@ def redouble(graphemes):
         # Rule 3A: Redouble a fricative or nasal that appears after a fricative where doubling is
         #          used to show voicelessness
         elif (first in DOUBLED_FRICATIVE and
-              second in DOUBLEABLE_FRICATIVE or
-              second in DOUBLEABLE_NASAL): 
+              (second in DOUBLEABLE_FRICATIVE or
+              second in DOUBLEABLE_NASAL)):
             result[i+1] = double[second]
             i += 2
 
@@ -224,7 +224,6 @@ def convert2ipa(graphemes):
 
 def main():
     pass
-
 
 
 if __name__ == "__main__":
