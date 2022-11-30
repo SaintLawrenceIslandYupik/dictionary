@@ -291,7 +291,7 @@ class Entry:
         
         <source>{self.source}</source>
         
-        <etymology>{self.etymology.replace('<', '&lt;')}</etymology>
+        <etymology>{self.etymology.replace('< ', '&lt; ')}</etymology>
         
         <semantic-code>{self.semantic_code}</semantic-code>
         
