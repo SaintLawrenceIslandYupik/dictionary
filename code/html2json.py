@@ -5,7 +5,6 @@ import hashlib
 from html2xml import *
 from redouble_and_convert2ipa import *
 
-
 class JsonEntry:
 
     def __init__(self, entry: "Entry"):
