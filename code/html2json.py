@@ -30,9 +30,9 @@ class JsonEntry:
         example_string = self.listFormat(example_string)
         
         return f"""
-"{self.UUID.hexdigest()}":{{
+{{"UUID":"{self.UUID.hexdigest()}",
 "search_word":"{self.entry.search}",
-"headword":"{self.entry.latin}",
+"headword":"{self.entry.latin.replace('<b>', '').replace('</b>', '')}",
 "root":"{self.entry.root}",
 "cyrillic":"{self.entry.cyrillic}",
 "ipa":"{self.entry.ipa}",
