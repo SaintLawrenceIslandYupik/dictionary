@@ -54,6 +54,41 @@ class Entry:
         self.examples = self.raw_examples.strip().replace(' / ', '; ').split("; ") if len(self.raw_examples) > 0 else []
         self.examples = [e.strip() for e in self.examples if len(e.strip()) > 0]
 
+        pos_roots = ["aagyug-",	        "afte-",	            "aghpu-",	            "aghqe-<sup>2</sup>",
+                    "aghsagh-",	        "aghteq-",	            "akag-",	            "ali-",
+                    "amel-",	        "amsa-",	            "amyugh-",	            "ane-",	
+                    "ange-",	        "angqaq<sup>1</sup>",	"anusi-",	            "apegh-<sup>2</sup>",
+                    "apeng-",	        "aqfa-<sup>2</sup>",	"aqupilegh-",	        "avagh-",
+                    "avi-",	            "awi-<sup>2</sup>",	    "elqugh-",	            "ggii-",
+                    "ighleg-",	        "ighsa-<sup>2</sup>",	"igi-",	                "iglag-",
+                    "iighw-",	        "ike-",	                "ineqe-",	            "ipig-",
+                    "iqe-",	            "itag-",	            "kagpes-",	            "kakeg-",
+                    "kangl-",	        "kape-",	            "kate-",	            "kavigh-",
+                    "kavyug-",	        "kayu-",	            "kemk-",	            "kipu-",
+                    "kive-",	        "kukik",	            "kumk-",	            "kumla-",
+                    "kuve-",	        "maam-",	            "maghyagh-",	        "malghug-",
+                    "malig-",	        "maqe-",	            "masa-",	            "meghyagh-",
+                    "meke-",	        "mengileg-",            "miite-<sup>1</sup>",	"mileg-",
+                    "naa-",	            "nakmi-",	            "nange-",	            "nanggha-",
+                    "napa-",	        "nara-",	            "nasqugh-",	            "navegh-",
+                    "nayvagh-",	        "nazigh-",	            "neghuva-",	            "nuge-",
+                    "nukegte-",	        "nungigh-",	            "nutagh-",	            "nuve-",
+                    "pagh-",	        "palagh-",	            "pategh-<sup>2</sup>",	"pegh-",
+                    "peghh-",	        "peke-",	            "pelu-",	            "pesall",
+                    "petg-",	        "piiv-",	            "piiz-",	            "pivag-",
+                    "piyaqe-",	        "puge-",	            "puve-",	            "qame-",
+                    "qerng-",	        "qetu-",	            "qiigh-<sup>2</sup>",	"qipe-",
+                    "qive-",	        "qupe-",	            "safk-",	            "safte-",
+                    "saghu-",	        "sapayu-",	            "sape-",	            "saqe-",
+                    "suka-",	        "supe-",	            "suug-",	            "tagh-",
+                    "take-",	        "tane-",	            "tangtagh-",	        "tape-",
+                    "taqe-",	        "tegge-",	            "tegh-",	            "tune-",
+                    "tute-",	        "ugme-",	            "ukma-",	            "una-",
+                    "uqenge-",	        "usugh-",	            "uvi-",	                "uya-<sup>1</sup>",
+                    "uya-<sup>2</sup>",	"waak-",	            "yaag-<sup>2</sup>",    "yaag-<sup>3</sup>",
+                    "alligh-",          "angatugh-"]
+        
+        print(self.latin)
         if ((len(self.examples) > 0 and (self.examples[0] == '<i>demonstrative adverb base</i>' or
                                          self.examples[0] == '<i>demonstrative adverb, localis case' or
                                          self.examples[0] == '<i>extended demonstrative pronoun</i>' or
@@ -155,6 +190,8 @@ class Entry:
             self.examples = self.examples[1:]
             #print(self.latin)
             self.part_of_speech = "dimensional root"
+        elif len(self.latin) > 0 and self.latin.replace('<b>', '').replace('</b>', '') in pos_roots:
+            self.part_of_speech = "root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
             if self.latin[0].isupper():
                 self.part_of_speech = "proper noun"
@@ -186,6 +223,7 @@ class Entry:
 
         self.examples = [Example(example) for example in self.examples]
         self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
+
         self.examples = [example for example in self.examples if len(example.english) > 0]
 
         self.combined_english_gloss = self.extract(17).split("; ")
