@@ -215,7 +215,7 @@ def convert2ipa(graphemes):
            "l"  :"\u006C",              # LATIN SMALL LETTER L
            "z"  :"\u007A",              # LATIN SMALL LETTER Z
            "y"  :"\u006A",              # LATIN SMALL LETTER J
-           "r"  :"\u027B",              # LATIN SMALL LETTER TURNED R WITH HOOK
+           "r"  :"\u0279",              # LATIN SMALL LETTER TURNED R
            "g"  :"\u0263",              # LATIN SMALL LETTER GAMMA
            "w"  :"\u0263\u02B7",        # LATIN SMALL LETTER GAMMA with MODIFIER LETTER SMALL W
            "gh" :"\u0281",              # LATIN LATTER SMALL CAPITAL INVERTED R
