@@ -54,6 +54,41 @@ class Entry:
         self.examples = self.raw_examples.strip().replace(' / ', '; ').split("; ") if len(self.raw_examples) > 0 else []
         self.examples = [e.strip() for e in self.examples if len(e.strip()) > 0]
 
+        pos_roots = ["aagyug-",	        "afte-",	            "aghpu-",	            "aghqe-<sup>2</sup>",
+                    "aghsagh-",	        "aghteq-",	            "akag-",	            "ali-",
+                    "amel-",	        "amsa-",	            "amyugh-",	            "ane-",	
+                    "ange-",	        "angqaq<sup>1</sup>",	"anusi-",	            "apegh-<sup>2</sup>",
+                    "apeng-",	        "aqfa-<sup>2</sup>",	"aqupilegh-",	        "avagh-",
+                    "avi-",	            "awi-<sup>2</sup>",	    "elqugh-",	            "ggii-",
+                    "ighleg-",	        "ighsa-<sup>2</sup>",	"igi-",	                "iglag-",
+                    "iighw-",	        "ike-",	                "ineqe-",	            "ipig-",
+                    "iqe-",	            "itag-",	            "kagpes-",	            "kakeg-",
+                    "kangl-",	        "kape-",	            "kate-",	            "kavigh-",
+                    "kavyug-",	        "kayu-",	            "kemk-",	            "kipu-",
+                    "kive-",	        "kukik",	            "kumk-",	            "kumla-",
+                    "kuve-",	        "maam-",	            "maghyagh-",	        "malghug-",
+                    "malig-",	        "maqe-",	            "masa-",	            "meghyagh-",
+                    "meke-",	        "mengileg-",            "miite-<sup>1</sup>",	"mileg-",
+                    "naa-",	            "nakmi-",	            "nange-",	            "nanggha-",
+                    "napa-",	        "nara-",	            "nasqugh-",	            "navegh-",
+                    "nayvagh-",	        "nazigh-",	            "neghuva-",	            "nuge-",
+                    "nukegte-",	        "nungigh-",	            "nutagh-",	            "nuve-",
+                    "pagh-",	        "palagh-",	            "pategh-<sup>2</sup>",	"pegh-",
+                    "peghh-",	        "peke-",	            "pelu-",	            "pesall",
+                    "petg-",	        "piiv-",	            "piiz-",	            "pivag-",
+                    "piyaqe-",	        "puge-",	            "puve-",	            "qame-",
+                    "qerng-",	        "qetu-",	            "qiigh-<sup>2</sup>",	"qipe-",
+                    "qive-",	        "qupe-",	            "safk-",	            "safte-",
+                    "saghu-",	        "sapayu-",	            "sape-",	            "saqe-",
+                    "suka-",	        "supe-",	            "suug-",	            "tagh-",
+                    "take-",	        "tane-",	            "tangtagh-",	        "tape-",
+                    "taqe-",	        "tegge-",	            "tegh-",	            "tune-",
+                    "tute-",	        "ugme-",	            "ukma-",	            "una-",
+                    "uqenge-",	        "usugh-",	            "uvi-",	                "uya-<sup>1</sup>",
+                    "uya-<sup>2</sup>",	"waak-",	            "yaag-<sup>2</sup>",    "yaag-<sup>3</sup>",
+                    "alligh-",          "angatugh-"]
+        
+        print(self.latin)
         if ((len(self.examples) > 0 and (self.examples[0] == '<i>demonstrative adverb base</i>' or
                                          self.examples[0] == '<i>demonstrative adverb, localis case' or
                                          self.examples[0] == '<i>extended demonstrative pronoun</i>' or
@@ -155,12 +190,28 @@ class Entry:
             self.examples = self.examples[1:]
             #print(self.latin)
             self.part_of_speech = "dimensional root"
+        elif len(self.latin) > 0 and self.latin.replace('<b>', '').replace('</b>', '') in pos_roots:
+            self.part_of_speech = "root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
             if self.latin[0].isupper():
                 self.part_of_speech = "proper noun"
                 #print(self.latin)
             else:
                 self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[0].isupper():
+            self.part_of_speech = "Proper Noun"
+        elif len(self.latin) > 0 and self.latin[0] == "<" and self.latin[3].isalpha() and self.latin[3].isupper():
+            self.part_of_speech = "Proper Noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == "*":
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin.find("<sup>e</sup>") != -1:
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin.find("-") == -1 and re.match(r"<sup>\d</sup>", self.latin) != False:
+            self.part_of_speech = "noun"
+        elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == "-":
+            self.part_of_speech = "verb"
+        elif len(self.latin) > 0 and "-" in self.latin:
+            self.part_of_speech = "verb"
         else:
             self.part_of_speech = None
 
@@ -172,6 +223,7 @@ class Entry:
 
         self.examples = [Example(example) for example in self.examples]
         self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
+
         self.examples = [example for example in self.examples if len(example.english) > 0]
 
         self.combined_english_gloss = self.extract(17).split("; ")
@@ -201,7 +253,20 @@ class Entry:
         result = result.replace('\xa0','')
         
         result = re.sub(r'<span class="Apple-converted-space">\s*</span>', ' ', result)
-        
+        result = re.sub(r'(<span class="s\d{1}">)(.*?)(</span>)', r'\2', result)
+        result = re.sub(r'<span class="s\d{1}">', '', result)
+        result = re.sub(r'<span class="Apple-converted-space">', '', result)
+
+        #individual case replacements for stray "s where there should be “ or ”
+        result = result.replace('“<i>Awalmiggaghmeng</i> saghnaaqitek," piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.', '“<i>Awalmiggaghmeng</i> saghnaaqitek,” piiqiinkut. <i>Awalmiggaghmeng</i> saghnaaqelghiikut.')
+        result = result.replace('Pimakanga uyughani, "<i>Iitek</i> tazinga aghnangusimayaghamken.”', 'Pimakanga uyughani, “<i>Iitek</i> tazinga aghnangusimayaghamken.”')
+        result = result.replace('"Aa-ha-ha-haa, sangantuq-aa atkugllaka aallaataghsigu?', '“Aa-ha-ha-haa, sangantuq-aa atkugllaka aallaataghsigu?”')
+        result = result.replace('… pengegniighutaaten. Masingka <i>nemetwhayaaghtaaten</i>."', '“… pengegniighutaaten. Masingka <i>nemetwhayaaghtaaten</i>.”')
+        result = result.replace('"Kii nutaan repall <i>neqetuten</i>” "Aa, nutaan repall <i>neqetunga</i>."', '“Kii nutaan repall <i>neqetuten</i>” “Aa, nutaan repall <i>neqetunga</i>.”')
+        result = result.replace('"Waamtamken, nayagitunga avangitunga." "Uuk, iqlengalghiitenqun.', '“Waamtamken, nayagitunga avangitunga.” “Uuk, iqlengalghiitenqun.')
+        result = result.replace('"Aa, sakun tagistek?" "Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….', '“Aa, sakun tagistek?” “Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….”')
+        result = result.replace('"Kaay aqsan <i>aafkaghllequq</i>."', '“Kaay aqsan <i>aafkaghllequq</i>.”')
+
         result = result.replace('yu<u>k', 'yu(u)k')
         
         if result.startswith('</i>') or result.startswith('</b>'):
@@ -264,7 +329,7 @@ class Entry:
         
         <source>{self.source}</source>
         
-        <etymology>{self.etymology.replace('<', '&lt;')}</etymology>
+        <etymology>{self.etymology.replace('< ', '&lt; ')}</etymology>
         
         <semantic-code>{self.semantic_code}</semantic-code>
         
@@ -290,6 +355,12 @@ class Example:
         self.yupik = example_string[yupik_start:yupik_end].strip()
         self.english = example_string[english_start:english_end].strip()
         self.citation = example_string[citation_start:citation_end].strip()
+        self.yupik = self.yupik.replace("'", "&#39;")
+        self.yupik = self.yupik.replace('"', "&#34;")
+        self.english = self.english.replace("'", "&#39;")
+        self.english = self.english.replace('"', "&#34;")
+        self.citation = self.citation.replace("'", "&#39;")
+        self.citation = self.citation.replace('"', "&#34;")
 
     def __str__(self):
 
@@ -314,6 +385,9 @@ class Note:
 
     def __init__(self, value: str):
         self.value: str = value
+
+        self.value = self.value.replace("'", "&#39;")
+        self.value = self.value.replace('"', "&#34;")
 
     def __str__(self):
 
