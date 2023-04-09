@@ -247,6 +247,9 @@ def convert2ipa(graphemes):
 
     result = []
 
+    if graphemes[-1] == '*':
+        graphemes = graphemes[0:-1]  # Remove '*' marking strong gh. It's not needed in the IPA.
+
     for grapheme in graphemes:
         if grapheme in ipa:
             result.append(ipa[grapheme])
