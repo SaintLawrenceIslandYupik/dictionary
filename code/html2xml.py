@@ -88,7 +88,6 @@ class Entry:
                     "uya-<sup>2</sup>",	"waak-",	            "yaag-<sup>2</sup>",    "yaag-<sup>3</sup>",
                     "alligh-",          "angatugh-"]
         
-        print(self.latin)
         if ((len(self.examples) > 0 and (self.examples[0] == '<i>demonstrative adverb base</i>' or
                                          self.examples[0] == '<i>demonstrative adverb, localis case' or
                                          self.examples[0] == '<i>extended demonstrative pronoun</i>' or
@@ -101,7 +100,11 @@ class Entry:
             (len(self.examples) > 1 and (self.examples[1] == '<i>extended demonstrative pronoun</i>' or
                                          self.examples[1] == '<i>demonstrative pronoun' or
                                          self.examples[1] == '<i>extended demonstrative pronoun' or
-                                         self.examples[1] == '<i>restricted demonstrative pronoun</i>'))):
+                                         self.examples[1] == '<i>obscured demonstrative pronoun' or
+                                         self.examples[1] == 'obscured demonstrative pronoun' or
+                                         self.examples[1] == '<i>restricted demonstrative pronoun' or
+                                         self.examples[1] == '<i>restricted demonstrative pronoun</i>')) or
+            (len(self.examples) > 2 and (self.examples[2] == '<i>restricted demonstrative pronoun'))):
             self.part_of_speech = "demonstrative"
         elif len(self.examples) > 0 and (self.examples[0] == '<i>essentially a particle</i>' or
                                          self.examples[0] == '<i>particle (?)</i>' or
@@ -188,14 +191,12 @@ class Entry:
             self.part_of_speech = "postural root"
         elif len(self.examples) > 0 and self.examples[0] == '<i>dimensional root</i>':
             self.examples = self.examples[1:]
-            #print(self.latin)
             self.part_of_speech = "dimensional root"
         elif len(self.latin) > 0 and self.latin.replace('<b>', '').replace('</b>', '') in pos_roots:
             self.part_of_speech = "root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
             if self.latin[0].isupper():
                 self.part_of_speech = "proper noun"
-                #print(self.latin)
             else:
                 self.part_of_speech = "noun"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[0].isupper():
