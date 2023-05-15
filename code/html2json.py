@@ -15,6 +15,8 @@ class JsonEntry:
         self.entry.search = re.sub(r'[^a-zA-Z]+', '', search_word)
         self.entry.root = self.rootGen(self.entry.search)
         self.entry.ipa = self.phoneticize(self.entry.root)
+        self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech)
+        self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
 
 
     def __str__(self):
@@ -37,7 +39,9 @@ class JsonEntry:
 "cyrillic":"{self.entry.cyrillic}",
 "ipa":"{self.entry.ipa}",
 "jacobson":"{self.entry.coded_cyrillic}",
-"pos":"{self.entry.part_of_speech}",
+"source_pos":"{self.entry.part_of_speech}",
+"pos":"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
+"tags":"{self.entry.tags}",
 "gloss":{gloss_string}
 "notes":{note_string}
 "examples":{example_string}
@@ -109,6 +113,48 @@ class JsonEntry:
         else:
             result = word
         return result
+
+    def simplifyPos(self, pos):
+        if "root" in pos:
+            pos = "root"
+        elif "particle" in pos:
+            pos = "particle"
+        return pos
+
+    def makeTags(self, notes, pos):
+        chukotkan = "<span class='tag ChukotkanTag'>CHUKOTKAN</span>"
+        common = "<span class='tag commonTag'>COMMON</span>"
+        emoRoot = "<span class='tag emotionalTag'>EMOTIONAL</span>"
+        postRoot = "<span class='tag posturalTag'>POSTURAL</span>"
+        demoRoot = "<span class='tag dimensionalTag'>DIMENSIONAL</span>"
+        exclPart = "<span class='tag exclamatoryTag'>EXCLAMATORY</span>"
+        conjPart = "<span class='tag conjunctiveTag'>CONJUNCTIVE</span>"
+        interPart = "<span class='tag interjectionalTag'>INTERJECTIONAL</span>"
+        advPart = "<span class='tag adverbialTag'>ADVERBIAL</span>"
+        #dialect specific tags
+        #expressions?
+
+        tagList = ""
+
+        #if above some threshold frequency taglist += common
+        if "Chukotkan" in " ".join([f'"{gloss}"' for gloss in notes]):
+            tagList += chukotkan
+        if "emotional" in pos:
+            tagList+= emoRoot
+        if "postural" in pos:
+            tagList+= postRoot
+        if "dimensional" in pos:
+            tagList+= demoRoot
+        if "exclamatory" in pos:
+            tagList+= exclPart
+        if "conjunctive" in pos:
+            tagList+= conjPart
+        if "interjectional" in pos:
+            tagList+= interPart
+        if "adverbial" in pos:
+            tagList+= advPart
+        
+        return tagList
 
 if __name__ == "__main__":
 
