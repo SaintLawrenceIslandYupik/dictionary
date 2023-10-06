@@ -232,8 +232,9 @@ class Entry:
         self.etymology = self.extract(19)
         self.semantic_code = self.extract(20)
         self.source = self.extract(21)
-        
-        self.alphabetizationA = self.extract(25)
+        self.postbase_head_form = self.extract(23)              # only applies to postbases
+        self.postbase_alphabetization_form = self.extract(24)   # only applies to postbases
+        self.alphabetizationA = self.extract(25)                # only applies to bases
         self.alphabetizationB = self.extract(26)
         
 
