@@ -48,6 +48,8 @@ class JsonEntry:
 "source":"{self.entry.source if self.entry.source != '' else "Badten et al, 2001"}",
 "etymology":"{self.entry.etymology.replace('< ', '&lt; ')}",
 "semantic_code":"{self.entry.semantic_code}",
+"postbase_head_form":"{self.entry.postbase_head_form}",                     
+"postbase_alphabetization_form":"{self.entry.postbase_alphabetization_form}",
 "alphaA":"{self.entry.alphabetizationA}",
 "alphaB":"{self.entry.alphabetizationB}"
 }},"""
@@ -164,14 +166,15 @@ if __name__ == "__main__":
 
     else:
         dictionary = HtmlDictionary(filename=sys.argv[1])
+        html_tag_pattern = re.compile(r'<.*?>') #html tag regex
         if len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '-'):
             for html_entry in dictionary:
                 entry = Entry(html_entry)
-                if len(entry.latin) > 0:
+                if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
                     print(JsonEntry(entry))
         else:
             with open(sys.argv[2], 'wt') as json:
                 for html_entry in dictionary:
                     entry = Entry(html_entry)
-                    if len(entry.latin) > 0:
+                    if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
                         print(JsonEntry(entry), file=json)
