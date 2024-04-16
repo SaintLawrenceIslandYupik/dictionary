@@ -4,6 +4,7 @@ import re
 import hashlib
 from html2xml import *
 from redouble_and_convert2ipa import *
+from freq_counts import freqCount
 
 class JsonEntry:
 
@@ -12,10 +13,11 @@ class JsonEntry:
         self.entry.temp = self.entry.latin + self.entry.combined_english_gloss[0]
         self.UUID = hashlib.sha1(bytes(self.entry.temp, 'utf-8'))
         search_word = re.sub(r'\<\/*\w+\>', '', self.entry.latin)
+        self.entry.headword = self.entry.latin.replace('<b>', '').replace('</b>', '')
         self.entry.search = re.sub(r'[^a-zA-Z]+', '', search_word)
         self.entry.root = self.rootGen(self.entry.search)
         self.entry.ipa = self.phoneticize(self.entry.root)
-        self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech)
+        self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech, self.entry.headword)
         self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
 
 
@@ -34,7 +36,7 @@ class JsonEntry:
         return f"""
 {{"UUID":"{self.UUID.hexdigest()}",
 "search_word":"{self.entry.search}",
-"headword":"{self.entry.latin.replace('<b>', '').replace('</b>', '')}",
+"headword":"{self.entry.headword}",
 "root":"{self.entry.root}",
 "cyrillic":"{self.entry.cyrillic}",
 "ipa":"{self.entry.ipa}",
@@ -123,9 +125,9 @@ class JsonEntry:
             pos = "particle"
         return pos
 
-    def makeTags(self, notes, pos):
+    def makeTags(self, notes, pos, headword):
         chukotkan = "<span class='tag ChukotkanTag'>CHUKOTKAN</span>"
-        common = "<span class='tag commonTag'>COMMON</span>"
+        uncommon = "<span class='tag uncommonTag'>UNCOMMON</span>"
         emoRoot = "<span class='tag emotionalTag'>EMOTIONAL</span>"
         postRoot = "<span class='tag posturalTag'>POSTURAL</span>"
         demoRoot = "<span class='tag dimensionalTag'>DIMENSIONAL</span>"
@@ -139,6 +141,9 @@ class JsonEntry:
         tagList = ""
 
         #if above some threshold frequency taglist += common
+        if headword in freqCount:
+            if freqCount[headword] < 10:
+                tagList+= uncommon 
         if "Chukotkan" in " ".join([f'"{gloss}"' for gloss in notes]):
             tagList += chukotkan
         if "emotional" in pos:
