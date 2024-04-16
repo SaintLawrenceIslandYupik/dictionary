@@ -1,3 +1,6 @@
 venv
 .idea/
 tmp.xml
+bases_*
+postbases_*
+.vscode
