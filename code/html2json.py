@@ -18,6 +18,8 @@ class JsonEntry:
         self.entry.root = self.rootGen(self.entry.search)
         self.entry.ipa = self.phoneticize(self.entry.root)
         self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech, self.entry.headword)
+        if self.entry.word_type == "postbase":
+            self.entry.part_of_speech = "postbase"
         self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
 
 

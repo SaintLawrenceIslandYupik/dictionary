@@ -45,7 +45,6 @@ class Entry:
         if len(html_entry) != 28:
             raise ValueError("There must be exactly 28 fields, but there were {len(fields)}")
         self._fields = dict(zip(Entry.field_names, list(html_entry)))
-        
         self.latin = self.extract(0)
         self.cyrillic = self.extract(-1)
         self.coded_cyrillic = self.extract(1)
@@ -236,8 +235,12 @@ class Entry:
         self.postbase_alphabetization_form = self.extract(24)   # only applies to postbases
         self.alphabetizationA = self.extract(25)                # only applies to bases
         self.alphabetizationB = self.extract(26)
-        
+        if self.postbase_head_form != '':
+            self.word_type = "postbase"
+        else:
+            self.word_type = "base"
 
+        
     @staticmethod
     def replace_english_apostrophe(s):
         import re

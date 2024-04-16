@@ -22,17 +22,51 @@ def tokenize(word):
     Tokenizes a given Yupik word into its respective graphemes
     '''
 
-    GRAPHEMES = ['Ngngw', 'ngngw', 'Ghhw', 'ghhw', 'Ngng', 'ngng',
-                 'Ghh', 'gh', 'Ghw', 'ghw', 'Ngw', 'ngw',
-                 'Gg', 'gg', 'Gh', 'gh', 'Kw', 'kw', 'Ll', 'll',
-                 'Mm', 'mm', 'Ng', 'ng', 'Nn', 'nn', 'Qw', 'qw',
-                 'Rr', 'rr', 'Wh', 'wh',
-                 'Aa', 'aa', 'Ii', 'ii', 'Uu', 'uu',
-                 'A', 'a', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h',
-                 'I', 'i', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n',
-                 'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't',
-                 'U', 'u', 'V', 'v', 'W', 'w', 'Y', 'y', 'Z', 'z']
+    GRAPHEMES = [
+        'ngngw',
+        'ngng',
+        'ghhw',
+        'ghh',
+        'ghw',
+        'ngw',
+        'gg',
+        'gh',
+        'kw',
+        'll',
+        'mm',
+        'ng',
+        'nn',
+        'qw',
+        'rr',
+        'wh',
+        'aa',
+        'ii',
+        'uu',
+        'a',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'k',
+        'l',
+        'm',
+        'n',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'v',
+        'w',
+        'y',
+        'z'
+    ]
 
+    # lower-case word so we don't have to worry about casing
+    word = word.lower()
+    
     result = []
 
     end = len(word) 
@@ -181,7 +215,7 @@ def convert2ipa(graphemes):
            "l"  :"\u006C",              # LATIN SMALL LETTER L
            "z"  :"\u007A",              # LATIN SMALL LETTER Z
            "y"  :"\u006A",              # LATIN SMALL LETTER J
-           "r"  :"\u027B",              # LATIN SMALL LETTER TURNED R WITH HOOK
+           "r"  :"\u0279",              # LATIN SMALL LETTER TURNED R
            "g"  :"\u0263",              # LATIN SMALL LETTER GAMMA
            "w"  :"\u0263\u02B7",        # LATIN SMALL LETTER GAMMA with MODIFIER LETTER SMALL W
            "gh" :"\u0281",              # LATIN LATTER SMALL CAPITAL INVERTED R
@@ -212,6 +246,9 @@ def convert2ipa(graphemes):
           }
 
     result = []
+
+    if graphemes[-1] == '*':
+        graphemes = graphemes[0:-1]  # Remove '*' marking strong gh. It's not needed in the IPA.
 
     for grapheme in graphemes:
         if grapheme in ipa:
