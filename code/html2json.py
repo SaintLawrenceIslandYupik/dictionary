@@ -180,11 +180,12 @@ class JsonEntry:
         if("," in latin):
             search_word = self.entry.latin.split(", ")
             for word in search_word:
-                word = re.sub(r'\<\/*\w+\>[e\d]*', '', word)
+                word = re.sub(r'\<\/*\w+\>[ef\d]*', '', word)
+                word = re.sub(r'[^a-zA-Z]+', '', word)
                 result.append(word)
         else:
             search_word = self.entry.latin
-            search_word = re.sub(r'\<\/*\w+\>[e\d]*', '', search_word)
+            search_word = re.sub(r'\<\/*\w+\>[ef\d]*', '', search_word)
             search_word = re.sub(r'[^a-zA-Z]+', '', search_word)
             result.append(search_word)
         return result
