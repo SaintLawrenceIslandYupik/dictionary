@@ -24,6 +24,8 @@ class JsonEntry:
         if self.entry.word_type == "postbase":
             self.entry.part_of_speech = "postbase"
         self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
+        if self.entry.pos == "postbase":
+            self.entry.search = [f'-{x}-' for x in self.entry.search]
 
 
     def __str__(self):

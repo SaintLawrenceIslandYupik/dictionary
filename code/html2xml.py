@@ -235,7 +235,7 @@ class Entry:
         self.postbase_alphabetization_form = self.extract(24)   # only applies to postbases
         self.alphabetizationA = self.extract(25)                # only applies to bases
         self.alphabetizationB = self.extract(26)
-        if self.postbase_head_form != '':
+        if self.postbase_head_form != '' or self.postbase_alphabetization_form != '':
             self.word_type = "postbase"
         else:
             self.word_type = "base"
