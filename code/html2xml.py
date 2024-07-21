@@ -221,6 +221,9 @@ class Entry:
             if '<i>adverbial particle:</i> esghaghlleqamken unaami' in example:
                 self.part_of_speech += '; adverbial particle'
 
+        if self.latin in ["%(e)nkuk / %(e)nkut", "–fqagh-/–fqaa-", "+fte-/+pete-", "-nkuk / -nkut"]:
+            self.latin = re.sub(r'[^<]\/', ',', self.latin)
+
         self.examples = [Example(example) for example in self.examples]
         self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
 
@@ -272,7 +275,14 @@ class Entry:
         result = result.replace('"Aa, sakun tagistek?" "Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….', '“Aa, sakun tagistek?” “Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….”')
         result = result.replace('"Kaay aqsan <i>aafkaghllequq</i>."', '“Kaay aqsan <i>aafkaghllequq</i>.”')
 
+        result = result.replace("+pagaatagh-/~<sub>sf</sub>vagaatagh-", "+pagaatagh-,~<sub>sf</sub>vagaatagh-")
+        result = result.replace("+palluq / ~<sub>f</sub>valluq", "+palluq,~<sub>f</sub>valluq" )
+        result = result.replace("~<sub>sf</sub>–gga-/~<sub>sf</sub>–ghha-","~<sub>sf</sub>–gga-,~<sub>sf</sub>–ghha-")
+
         result = result.replace('yu<u>k', 'yu(u)k')
+        result = result.replace('iqlumghu-,', 'iqlumghu-')
+        result = result.replace('kukugugg,', 'kukugugg')
+        result = result.replace('nallegha,', 'nallegha')
         
         if result.startswith('</i>') or result.startswith('</b>'):
             result = result[4:]

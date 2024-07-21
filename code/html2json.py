@@ -17,7 +17,7 @@ class JsonEntry:
         #search_word = re.sub(r'\<\/*\w+\>\w*', '', self.entry.latin)
         self.entry.headword = self.entry.latin.replace('<b>', '').replace('</b>', '')
         #self.entry.search = re.sub(r'[^a-zA-Z]+', '', search_word)
-        self.entry.search = self.searchWord(self.entry.latin)
+        self.entry.search = list(set(self.searchWord(self.entry.latin)))
         self.entry.root = self.rootGen(self.entry.search)
         self.entry.ipa = self.phoneticize(self.entry.search)
         self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech, self.entry.headword)
@@ -26,6 +26,10 @@ class JsonEntry:
         self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
         if self.entry.pos == "postbase":
             self.entry.search = [f'-{x}-' for x in self.entry.search]
+        if self.entry.pos == "verb":
+            self.entry.search = [f'{x}-' for x in self.entry.search]
+        self.entry.search.extend(self.entry.root)
+
 
 
     def __str__(self):
@@ -42,7 +46,7 @@ class JsonEntry:
         
         return f"""
 {{"UUID":"{self.UUID.hexdigest()}",
-"search_word":{self.entry.search},
+"search_word":{list(set(self.entry.search))},
 "headword":"{self.entry.headword}",
 "root":{self.entry.root},
 "cyrillic":"{self.entry.cyrillic}",
@@ -179,17 +183,33 @@ class JsonEntry:
     def searchWord(self, latin):
         result = []
         search_word = []
-        if("," in latin):
-            search_word = self.entry.latin.split(", ")
-            for word in search_word:
-                word = re.sub(r'\<\/*\w+\>[ef\d]*', '', word)
-                word = re.sub(r'[^a-zA-Z]+', '', word)
-                result.append(word)
-        else:
-            search_word = self.entry.latin
-            search_word = re.sub(r'\<\/*\w+\>[ef\d]*', '', search_word)
-            search_word = re.sub(r'[^a-zA-Z]+', '', search_word)
-            result.append(search_word)
+        search_word = re.split(r",\s*", latin)
+        for word in search_word:
+            if("(" in word):
+                if(re.match(r"[^<]\/", word)):
+                    temp = re.sub(r'\((.*)\)', r'\1', word)
+                    temproot = re.sub(r'\((.*)\)', '', word)
+                    pref = temp.split("/")
+                    for x in pref:
+                        search_word.append(temp+temproot)
+                else:
+                    search_word.append(re.sub(r'\(.*\)', '', word))
+            word = re.sub(r'\<\/*\w+\>[esf\d]*', '', word)
+            word = re.sub(r'[^a-zA-Z]+', '', word)
+            print(word)
+            result.append(word)
+
+        #if("," in latin):
+        #    search_word = latin.split(", ")
+        #    for word in search_word:
+        #        word = re.sub(r'\<\/*\w+\>[ef\d]*', '', word)
+        #        word = re.sub(r'[^a-zA-Z]+', '', word)
+        #        result.append(word)
+        #else:
+        #    search_word = self.entry.latin
+        #    search_word = re.sub(r'\<\/*\w+\>[ef\d]*', '', search_word)
+        #    search_word = re.sub(r'[^a-zA-Z]+', '', search_word)
+        #    result.append(search_word)
         return result
 
 if __name__ == "__main__":
