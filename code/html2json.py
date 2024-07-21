@@ -29,6 +29,7 @@ class JsonEntry:
         if self.entry.pos == "verb":
             self.entry.search = [f'{x}-' for x in self.entry.search]
         self.entry.search.extend(self.entry.root)
+        self.entry.search.append(self.entry.headword)
 
 
 
@@ -196,7 +197,6 @@ class JsonEntry:
                     search_word.append(re.sub(r'\(.*\)', '', word))
             word = re.sub(r'\<\/*\w+\>[esf\d]*', '', word)
             word = re.sub(r'[^a-zA-Z]+', '', word)
-            print(word)
             result.append(word)
 
         #if("," in latin):
