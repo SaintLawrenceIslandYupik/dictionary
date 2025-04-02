@@ -59,7 +59,7 @@ class JsonEntry:
 "gloss":{gloss_string}
 "notes":{note_string}
 "examples":{example_string}
-"source":"{self.entry.source if self.entry.source != '' else "Badten et al, 2001"}",
+"source":"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
 "etymology":"{self.entry.etymology.replace('< ', '&lt; ')}",
 "semantic_code":"{self.entry.semantic_code}",
 "postbase_head_form":"{self.entry.postbase_head_form}",                     
