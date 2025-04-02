@@ -259,6 +259,16 @@ class Entry:
         result = result.strip()
         result = Entry.replace_english_apostrophe(result)
         result = result.replace('\xa0','')
+
+        # Replace Jacobson's PE/PY etymology notation with IPA
+        if index==19:
+            mapping = [('0', '\u0259'),  # LATIN SMALL LETTER SCHWA
+                       ('9', '\u00F0'),  # LATIN LETTER ETH
+                       ('3', '\u0280'),  # LATIN LETTER SMALL CAPITAL R
+                       ('!', '\u0263'),  # LATIN SMALL LETTER GAMMA
+                       ('&', '\u014B') ] # LATIN SMALL LETTER ENG
+            for k, v in mapping:
+                result = result.replace(k, v)
         
         result = re.sub(r'<span class="Apple-converted-space">\s*</span>', ' ', result)
         result = re.sub(r'(<span class="s\d{1}">)(.*?)(</span>)', r'\2', result)
