@@ -293,6 +293,8 @@ class Entry:
         result = result.replace('iqlumghu-,', 'iqlumghu-')
         result = result.replace('kukugugg,', 'kukugugg')
         result = result.replace('nallegha,', 'nallegha')
+
+        result = result.replace("<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’</span><span class='citation'>or ‘(it is) the end’</span>", "<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’ or ‘(it is) the end’</span>")
         
         if result.startswith('</i>') or result.startswith('</b>'):
             result = result[4:]
