@@ -85,8 +85,8 @@ class JsonEntry:
         result = result.replace("<english-example>", "<span class='english_ex'>")
         result = re.sub(r"</english-example>\n\s*", "</span>", result)
         result = result.replace("</english-example>\n", "</span>")
-        result = result.replace("<citation>", "\n\t\t<span class='citation'>")
-        result = re.sub(r"</citation>\n\s*", "</span>", result)
+        result = result.replace("<citation>", "\n\t\t<a href='about.html#exRefs'><span class='citation'>")
+        result = re.sub(r"</citation>\n\s*", "</span></a>", result)
         result = re.sub(r"\n\s*", "", result)
        #result = result.replace("</citation>", "</span>")
         return result
