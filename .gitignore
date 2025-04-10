@@ -4,3 +4,4 @@ tmp.xml
 bases_*
 postbases_*
 .vscode
+__pycache__
