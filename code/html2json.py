@@ -31,16 +31,14 @@ class JsonEntry:
         self.entry.search.extend(self.entry.root)
         self.entry.search.append(self.entry.headword)
 
-
-
     def __str__(self):
         for i, element in enumerate(self.entry.combined_english_gloss):
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
 
-        gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + '],'
-        note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  '],'
-        example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + '],'
+        gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + ']'
+        note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  ']'
+        example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + ']'
         
         note_string = self.listFormat(note_string)
         example_string = self.listFormat(example_string)
@@ -56,11 +54,11 @@ class JsonEntry:
 "source_pos":"{self.entry.part_of_speech}",
 "pos":"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
 "tags":"{self.entry.tags}",
-"gloss":{gloss_string}
-"notes":{note_string}
-"examples":{example_string}
+"gloss":{gloss_string},
+"notes":{note_string},
+"examples":{example_string},
 "source":"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
-"etymology":"{self.entry.etymology.replace('< ', '&lt; ')}",
+"etymology":"{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"}",
 "semantic_code":"{self.entry.semantic_code}",
 "postbase_head_form":"{self.entry.postbase_head_form}",                     
 "postbase_alphabetization_form":"{self.entry.postbase_alphabetization_form}",
@@ -195,7 +193,9 @@ class JsonEntry:
                         search_word.append(temp+temproot)
                 else:
                     search_word.append(re.sub(r'\(.*\)', '', word))
-            word = re.sub(r'\<\/*\w+\>[esf\d]*', '', word)
+            elif("<sup>e" in word):
+                search_word.append(re.sub(r'\<sup\>e\<\/sup\>', 'e', word))
+            word = re.sub(r'\<\/*\w+\>[sef\d]*', '', word)
             word = re.sub(r'[^a-zA-Z]+', '', word)
             result.append(word)
 
