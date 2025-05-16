@@ -266,7 +266,8 @@ class Entry:
                        ('9', '\u00F0'),  # LATIN LETTER ETH
                        ('3', '\u0280'),  # LATIN LETTER SMALL CAPITAL R
                        ('!', '\u0263'),  # LATIN SMALL LETTER GAMMA
-                       ('&', '\u014B') ] # LATIN SMALL LETTER ENG
+                       ('&', '\u014B'),  # LATIN SMALL LETTER ENG
+                       ('@', '\u026C') ]  # LATIN SMALL LETTER L WITH BELT')
             for k, v in mapping:
                 result = result.replace(k, v)
         
