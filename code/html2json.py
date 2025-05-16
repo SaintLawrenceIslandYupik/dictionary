@@ -7,6 +7,9 @@ import hashlib
 from html2xml import *
 from redouble_and_convert2ipa import *
 from freq_counts import freqCount
+from errata import err
+from errata import additions
+import json
 
 class JsonEntry:
 
@@ -36,35 +39,75 @@ class JsonEntry:
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
 
-        gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + ']'
-        note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  ']'
-        example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + ']'
-        
+        # gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + ']'
+        # note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  ']'
+        # example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + ']'
+
+        gloss_string = ", ".join([f'{gloss}' for gloss in self.entry.combined_english_gloss])
+        note_string = ", ".join([f'{gloss}' for gloss in self.entry.notes])
+        example_string = ", ".join([f'{gloss}' for gloss in self.entry.examples])
+
         note_string = self.listFormat(note_string)
         example_string = self.listFormat(example_string)
+        id = self.UUID.hexdigest()
+
+        entryObject = {"UUID":f"{id}",
+            "search_word":list(set(self.entry.search)),
+            "headword":f"{self.entry.headword}",
+            "root":self.entry.root,
+            "cyrillic":f"{self.entry.cyrillic}",
+            "ipa":self.entry.ipa,
+            "jacobson":f"{self.entry.coded_cyrillic}",
+            "source_pos":f"{self.entry.part_of_speech}",
+            "pos":f"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
+            "tags":f"{self.entry.tags}",
+            "gloss":gloss_string.split(", "),
+            "notes":note_string.split(", "),
+            "examples":example_string.split(", "),
+            "source":f"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
+            "etymology":f"{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"}",
+            "semantic_code":f"{self.entry.semantic_code}",
+            "postbase_head_form":f"{self.entry.postbase_head_form}",                     
+            "postbase_alphabetization_form":f"{self.entry.postbase_alphabetization_form}",
+            "alphaA":f"{self.entry.alphabetizationA}",
+            "alphaB":f"{self.entry.alphabetizationB}"
+            }
+
+        #trying to introduce errata here
+        keyList = ["UUID", "search_word", "headword", "root", "cyrillic", 
+         "ipa", "jacobson", "source_pos", "pos", "tags", "gloss", "notes", 
+         "examples", "source","etymology", "semantic_code", "postbase_head_form", 
+         "postbase_alphabetization_form", "alphaA", "alphaB"]
+        if id in err:
+            for key in keyList:
+                if key in err[id]:
+                    entryObject[key] = err[id][key]
+
+
+#         entryObject = f"""
+# {{"UUID":"{id}",
+# "search_word":{list(set(self.entry.search))},
+# "headword":"{self.entry.headword}",
+# "root":{self.entry.root},
+# "cyrillic":"{self.entry.cyrillic}",
+# "ipa":{self.entry.ipa},
+# "jacobson":"{self.entry.coded_cyrillic}",
+# "source_pos":"{self.entry.part_of_speech}",
+# "pos":"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
+# "tags":"{self.entry.tags}",
+# "gloss":{gloss_string},
+# "notes":{note_string},
+# "examples":{example_string},
+# "source":"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
+# "etymology":"{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"}",
+# "semantic_code":"{self.entry.semantic_code}",
+# "postbase_head_form":"{self.entry.postbase_head_form}",                     
+# "postbase_alphabetization_form":"{self.entry.postbase_alphabetization_form}",
+# "alphaA":"{self.entry.alphabetizationA}",
+# "alphaB":"{self.entry.alphabetizationB}"
+# }},"""
         
-        return f"""
-{{"UUID":"{self.UUID.hexdigest()}",
-"search_word":{list(set(self.entry.search))},
-"headword":"{self.entry.headword}",
-"root":{self.entry.root},
-"cyrillic":"{self.entry.cyrillic}",
-"ipa":{self.entry.ipa},
-"jacobson":"{self.entry.coded_cyrillic}",
-"source_pos":"{self.entry.part_of_speech}",
-"pos":"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
-"tags":"{self.entry.tags}",
-"gloss":{gloss_string},
-"notes":{note_string},
-"examples":{example_string},
-"source":"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
-"etymology":"{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"}",
-"semantic_code":"{self.entry.semantic_code}",
-"postbase_head_form":"{self.entry.postbase_head_form}",                     
-"postbase_alphabetization_form":"{self.entry.postbase_alphabetization_form}",
-"alphaA":"{self.entry.alphabetizationA}",
-"alphaB":"{self.entry.alphabetizationB}"
-}},"""
+        return str(entryObject)
 
     def listFormat(self, baseString: str):
         result = baseString
@@ -151,16 +194,18 @@ class JsonEntry:
         conjPart = "<span class='tag conjunctiveTag'>CONJUNCTIVE</span>"
         interPart = "<span class='tag interjectionalTag'>INTERJECTIONAL</span>"
         advPart = "<span class='tag adverbialTag'>ADVERBIAL</span>"
-        #dialect specific tags
+        gamWord = "<span class='tag gambellWord'>Sivuqaq</span>"
+        savWord = "<span class='tag savoongaWord'>Sivungaq</span>"
         #expressions?
 
         tagList = ""
 
+        allNotes = " ".join([f'"{gloss}"' for gloss in notes])
         #if above some threshold frequency taglist += common
         if headword in freqCount:
             if freqCount[headword] < 10:
                 tagList+= uncommon 
-        if "Chukotkan" in " ".join([f'"{gloss}"' for gloss in notes]):
+        if "Chukotkan" in allNotes:
             tagList+= chukotkan
         if "emotional" in pos:
             tagList+= emoRoot
@@ -176,6 +221,10 @@ class JsonEntry:
             tagList+= interPart
         if "adverbial" in pos:
             tagList+= advPart
+        if "a Savoonga word" in allNotes:
+            tagList+= savWord
+        if "a Gambell word" in allNotes:
+            tagList+= gamWord
         
         return tagList
     
@@ -212,6 +261,12 @@ class JsonEntry:
         #    result.append(search_word)
         return result
 
+    #def errata(self):
+        #check if entry exists in errata
+        #if so: 
+        #  check each attribute of the entry object for possible errata and replace
+    #return entry
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 2 and len(sys.argv) != 3:
@@ -227,8 +282,10 @@ if __name__ == "__main__":
                 if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
                     print(JsonEntry(entry))
         else:
-            with open(sys.argv[2], 'wt') as json:
+            with open(sys.argv[2], 'wt') as f:
                 for html_entry in dictionary:
                     entry = Entry(html_entry)
                     if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
-                        print(JsonEntry(entry), file=json)
+                        print(JsonEntry(entry), file=f)
+            if "post" not in sys.argv[1]:
+                print(additions)
