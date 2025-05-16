@@ -51,26 +51,26 @@ class JsonEntry:
         example_string = self.listFormat(example_string)
         id = self.UUID.hexdigest()
 
-        entryObject = {"UUID":f"{id}",
+        entryObject = {"UUID":id,
             "search_word":list(set(self.entry.search)),
-            "headword":f"{self.entry.headword}",
+            "headword":self.entry.headword,
             "root":self.entry.root,
-            "cyrillic":f"{self.entry.cyrillic}",
+            "cyrillic":self.entry.cyrillic,
             "ipa":self.entry.ipa,
-            "jacobson":f"{self.entry.coded_cyrillic}",
-            "source_pos":f"{self.entry.part_of_speech}",
+            "jacobson":self.entry.coded_cyrillic,
+            "source_pos":self.entry.part_of_speech,
             "pos":f"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
-            "tags":f"{self.entry.tags}",
+            "tags":[self.entry.tags],
             "gloss":gloss_string.split(", "),
             "notes":note_string.split(", "),
             "examples":example_string.split(", "),
-            "source":f"{self.entry.source if self.entry.source != '' else "Badten et al (2008)"}",
-            "etymology":f"{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"}",
-            "semantic_code":f"{self.entry.semantic_code}",
-            "postbase_head_form":f"{self.entry.postbase_head_form}",                     
-            "postbase_alphabetization_form":f"{self.entry.postbase_alphabetization_form}",
-            "alphaA":f"{self.entry.alphabetizationA}",
-            "alphaB":f"{self.entry.alphabetizationB}"
+            "source":{self.entry.source if self.entry.source != '' else "Badten et al (2008)"},
+            "etymology":{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"},
+            "semantic_code":self.entry.semantic_code,
+            "postbase_head_form":self.entry.postbase_head_form,                     
+            "postbase_alphabetization_form":self.entry.postbase_alphabetization_form,
+            "alphaA":self.entry.alphabetizationA,
+            "alphaB":self.entry.alphabetizationB
             }
 
         #trying to introduce errata here
