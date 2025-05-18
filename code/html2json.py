@@ -10,6 +10,7 @@ from freq_counts import freqCount
 from errata import err
 from errata import additions
 import json
+import pprint
 
 class JsonEntry:
 
@@ -34,25 +35,18 @@ class JsonEntry:
         self.entry.search.extend(self.entry.root)
         self.entry.search.append(self.entry.headword)
 
-    def __str__(self):
+        #build entryObject
         for i, element in enumerate(self.entry.combined_english_gloss):
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
             self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
 
-        # gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + ']'
-        # note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  ']'
-        # example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + ']'
-
-        gloss_string = ", ".join([f'{gloss}' for gloss in self.entry.combined_english_gloss])
-        note_string = ", ".join([f'{gloss}' for gloss in self.entry.notes])
-        example_string = ", ".join([f'{gloss}' for gloss in self.entry.examples])
-
-        note_string = self.listFormat(note_string)
-        example_string = self.listFormat(example_string)
+        note_list = [f'{self.listFormat(str(note))}' for note in self.entry.notes]
+        example_list = [f'{self.listFormat(str(example))}' for example in self.entry.examples]
+        
         id = self.UUID.hexdigest()
 
-        entryObject = {"UUID":id,
-            "search_word":list(set(self.entry.search)),
+        self.entryObject = {"UUID":id,
+            "search_word":list(self.entry.search),
             "headword":self.entry.headword,
             "root":self.entry.root,
             "cyrillic":self.entry.cyrillic,
@@ -60,12 +54,12 @@ class JsonEntry:
             "jacobson":self.entry.coded_cyrillic,
             "source_pos":self.entry.part_of_speech,
             "pos":f"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
-            "tags":[self.entry.tags],
-            "gloss":gloss_string.split(", "),
-            "notes":note_string.split(", "),
-            "examples":example_string.split(", "),
-            "source":{self.entry.source if self.entry.source != '' else "Badten et al (2008)"},
-            "etymology":{self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available"},
+            "tags":self.entry.tags,
+            "gloss":self.entry.combined_english_gloss,
+            "notes":note_list,
+            "examples":example_list,
+            "source":self.entry.source if self.entry.source != '' else "Badten et al (2008)",
+            "etymology":self.entry.etymology.replace('< ', '&lt; ') if self.entry.etymology != '' else "No data available",
             "semantic_code":self.entry.semantic_code,
             "postbase_head_form":self.entry.postbase_head_form,                     
             "postbase_alphabetization_form":self.entry.postbase_alphabetization_form,
@@ -81,7 +75,24 @@ class JsonEntry:
         if id in err:
             for key in keyList:
                 if key in err[id]:
-                    entryObject[key] = err[id][key]
+                    self.entryObject[key] = err[id][key]
+
+    def __str__(self):
+
+        return f"{self.entry.examples[0]}"
+        # for i, element in enumerate(self.entry.combined_english_gloss):
+        #     self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
+        #     self.entry.combined_english_gloss[i] = element.replace('"', "&#34;")
+
+        # # gloss_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.combined_english_gloss]) + ']'
+        # # note_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.notes]) +  ']'
+        # # example_string = '[' + ", ".join([f'"{gloss}"' for gloss in self.entry.examples]) + ']'
+        
+        # # note_string = self.listFormat(note_string)
+        # # example_string = self.listFormat(example_string)
+
+        # note_list = [f'{self.listFormat(str(note))}' for note in self.entry.notes]
+        # example_list = [f'{self.listFormat(str(example))}' for example in self.entry.examples]
 
 
 #         entryObject = f"""
@@ -106,8 +117,6 @@ class JsonEntry:
 # "alphaA":"{self.entry.alphabetizationA}",
 # "alphaB":"{self.entry.alphabetizationB}"
 # }},"""
-        
-        return str(entryObject)
 
     def listFormat(self, baseString: str):
         result = baseString
@@ -126,7 +135,7 @@ class JsonEntry:
         result = result.replace("<english-example>", "<span class='english_ex'>")
         result = re.sub(r"</english-example>\n\s*", "</span>", result)
         result = result.replace("</english-example>\n", "</span>")
-        result = result.replace("<citation>", "\n\t\t<a href='about.html#exRefs'><span class='citation'>")
+        result = result.replace("<citation>", "<a href='about.html#exRefs'><span class='citation'>")
         result = re.sub(r"</citation>\n\s*", "</span></a>", result)
         result = re.sub(r"\n\s*", "", result)
        #result = result.replace("</citation>", "</span>")
@@ -268,7 +277,6 @@ class JsonEntry:
     #return entry
 
 if __name__ == "__main__":
-
     if len(sys.argv) != 2 and len(sys.argv) != 3:
         print(f"Usage:\t{sys.argv[0]} lexicon.html (output.json)", file=sys.stderr, flush=True)
         sys.exit(0)
@@ -277,15 +285,23 @@ if __name__ == "__main__":
         dictionary = HtmlDictionary(filename=sys.argv[1])
         html_tag_pattern = re.compile(r'<.*?>') #html tag regex
         if len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '-'):
+            print("var LEX = [", sep="")
             for html_entry in dictionary:
                 entry = Entry(html_entry)
                 if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
-                    print(JsonEntry(entry))
+                    output = JsonEntry(entry).entryObject
+                    print(output, ",", sep="")
+            if "post" not in sys.argv[1]:
+                print(additions)
+            print("];", sep="")
         else:
             with open(sys.argv[2], 'wt') as f:
+                print("var LEX = [", file=f, sep="")
                 for html_entry in dictionary:
                     entry = Entry(html_entry)
                     if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
-                        print(JsonEntry(entry), file=f)
+                        output = str(JsonEntry(entry).entryObject)
+                        print(output, ",", file=f, sep="")
             if "post" not in sys.argv[1]:
-                print(additions)
+                print(additions, file=f)
+            print("];", file=f, sep="")
