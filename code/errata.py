@@ -49,6 +49,21 @@ err = {
         #according to Beulah and Tasi
         #5/14/25
         #BH
+    },
+    "323d9201ec87985f5df2c945ceda8a2dc43dd82e":{
+        #some fragments of examples ended up in notes >> ,creek’ (<i>from</i> kiikw,cloth cover parka’ (<i>from</i> qiipaq
+        "notes":["<i>non-productive,forms with this postbase are generally lexicalized</i>"],
+        "examples":["<span class='yupik_ex'>aghnaghaq</span><span class='english_ex'>‘girl’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> aghnaq ‘woman’)</span></a>","<span class='yupik_ex'>kaviighaq</span><span class='english_ex'>‘young fox’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> kaviiq ‘fox’)</span></a>","<span class='yupik_ex'>qikmighaq</span><span class='english_ex'>‘puppy’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> qikmiq ‘dog’)</span></a>",
+                    "<span class='yupik_ex'>afsengaghaq</span><span class='english_ex'>‘baby mouse’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> afsengaq ‘mouse’)</span></a>",
+                    "<span class='yupik_ex'>naayvaghaq</span><span class='english_ex'>‘little lake’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> naayvaq ‘lake’)</span></a>",
+                    "<span class='yupik_ex'>kiiwaq</span><span class='english_ex'>‘little river,creek’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> kiikw</span></a>",
+                    "<span class='yupik_ex'>itegaq</span><span class='english_ex'>‘foot’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> itek ‘toe cap of boot’)</span></a>",
+                    "<span class='yupik_ex'>amighaq</span><span class='english_ex'>‘skin prepared for a boat’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> amiq ‘skin’)</span></a>",
+                    "<span class='yupik_ex'>ateghaq</span><span class='english_ex'>‘alternate name’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> ateq ‘name’)</span></a>",
+                    "<span class='yupik_ex'>manughaq</span><span class='english_ex'>‘front of house’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> manu ‘front’)</span></a>",
+                    "<span class='yupik_ex'>qesighaq</span><span class='english_ex'>‘mist’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> qesiq ‘spittle’)</span></a>",
+                    "<span class='yupik_ex'>qiipaghaq</span><span class='english_ex'>‘cloth, cloth cover parka’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> qiipaq)</span></a>",
+                    "<span class='yupik_ex'><i>possibly also,</i> ighneghaq</span><span class='english_ex'>‘intestine’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> ighneq ‘son’", "<i>though the semantic connection is not clear)</i></span></a>"]
     }
 }
 #natmun has incorrect parse > "natmun + natmun"
