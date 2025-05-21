@@ -55,7 +55,7 @@ class JsonEntry:
             "ipa":self.entry.ipa,
             "jacobson":self.entry.coded_cyrillic,
             "source_pos":self.entry.part_of_speech,
-            "pos":f"<span class='tag {self.entry.pos}Tag'>{self.entry.pos.upper()}</span>",
+            "pos":f"<span class='tag {self.entry.pos.replace(" ", "")}Tag'>{self.entry.pos.upper()}</span>",
             "tags":self.entry.tags,
             "gloss":self.entry.combined_english_gloss,
             "notes":note_list,
@@ -199,8 +199,8 @@ class JsonEntry:
         conjPart = "<span class='tag conjunctiveTag'>CONJUNCTIVE</span>"
         interPart = "<span class='tag interjectionalTag'>INTERJECTIONAL</span>"
         advPart = "<span class='tag adverbialTag'>ADVERBIAL</span>"
-        gamWord = "<span class='tag gambellWord'>Sivuqaq</span>"
-        savWord = "<span class='tag savoongaWord'>Sivungaq</span>"
+        gamWord = "<span class='tag gambellWord'>SIVUQAQ</span>"
+        savWord = "<span class='tag savoongaWord'>SIVUNGAQ</span>"
         #expressions?
 
         tagList = ""
