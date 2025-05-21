@@ -18,22 +18,24 @@ class JsonEntry:
         self.entry = entry
         self.entry.temp = self.entry.latin + self.entry.combined_english_gloss[0]
         self.UUID = hashlib.sha1(bytes(self.entry.temp, 'utf-8'))
-        #search_word = re.sub(r'\<\/*\w+\>\w*', '', self.entry.latin)
+
         self.entry.headword = self.entry.latin.replace('<b>', '').replace('</b>', '')
-        #self.entry.search = re.sub(r'[^a-zA-Z]+', '', search_word)
-        self.entry.search = list(set(self.searchWord(self.entry.latin)))
-        self.entry.root = self.rootGen(self.entry.search)
-        self.entry.ipa = self.phoneticize(self.entry.search)
+        self.entry.search = self.searchWord(self.entry.headword)
+        first_search_word = self.entry.search[0]
+        self.entry.root = self.rootGen(first_search_word)
+        self.entry.ipa = self.phoneticize(first_search_word)
         self.entry.tags = self.makeTags(self.entry.notes, self.entry.part_of_speech, self.entry.headword)
         if self.entry.word_type == "postbase":
             self.entry.part_of_speech = "postbase"
         self.entry.pos = self.simplifyPos(self.entry.part_of_speech)
         if self.entry.pos == "postbase":
-            self.entry.search = [f'-{x}-' for x in self.entry.search]
+            self.entry.search.extend([f'-{x}-' for x in self.entry.search])
+            self.entry.search.append(f'-{self.entry.root}-')
         if self.entry.pos == "verb":
             self.entry.search = [f'{x}-' for x in self.entry.search]
-        self.entry.search.extend(self.entry.root)
+        self.entry.search.append(self.entry.root)
         self.entry.search.append(self.entry.headword)
+
 
         #build entryObject
         for i, element in enumerate(self.entry.combined_english_gloss):
@@ -46,7 +48,7 @@ class JsonEntry:
         id = self.UUID.hexdigest()
 
         self.entryObject = {"UUID":id,
-            "search_word":list(self.entry.search),
+            "search_word":list(set(self.entry.search)),
             "headword":self.entry.headword,
             "root":self.entry.root,
             "cyrillic":self.entry.cyrillic,
@@ -141,50 +143,44 @@ class JsonEntry:
        #result = result.replace("</citation>", "</span>")
         return result
 
-    def phoneticize(self, roots):
-        result = []
-        for word in roots:
-            temp = tokenize(word)
-            temp = redouble(temp)
-            temp = convert2ipa(temp)
-            temp = tokens2string(temp)
-            result.append(temp)
-        return result
+    def phoneticize(self, word):
+        temp = tokenize(word)
+        temp = redouble(temp)
+        temp = convert2ipa(temp)
+        temp = tokens2string(temp)
+        return temp
 
-    def rootGen(self, roots):
-        result = []
-        for word in roots:
-            #verbs
-            if "-" in self.entry.latin:
-                temp = word
-            #nouns: "kw"
-            elif word[-2:] == "kw":
-                temp = word[:-2] + "w"
-            #nouns: "qw"
-            elif word[-2:] == "qw":
-                temp = word[:-2] + "ghw"
-            #nouns: marked strong gh
-            elif "*" in self.entry.latin:
-                temp = word[:-1] + "gh*"
-            #nouns: all other gh - "qikmiq"
-            elif word[-1] == "q":
-                temp = word[:-1] + "gh"
-            #nouns: g - "sikik"
-            elif word[-1] == "k":
-                temp = word[:-1] + "g"
-            #noun:e-underlying - "aaggaatae" 
-            elif word[-2:] == "ae":
-                temp = word[:-2] + "e"
-            #vowel final roots: "repa"(N), "aafte"(V)
-            elif word[-1] in ["a", "i", "u", "e"]:
-                temp = word
-            #nouns: te
-            elif word[-1] == "n":
-                temp = word[:-1] + "te"
-            else:
-                temp = word
-            result.append(temp)
-        return result
+    def rootGen(self, word):
+        #verbs
+        if "-" in self.entry.latin:
+            temp = word
+        #nouns: "kw"
+        elif word[-2:] == "kw":
+            temp = word[:-2] + "w"
+        #nouns: "qw"
+        elif word[-2:] == "qw":
+            temp = word[:-2] + "ghw"
+        #nouns: marked strong gh
+        elif "*" in self.entry.latin:
+            temp = word[:-1] + "gh*"
+        #nouns: all other gh - "qikmiq"
+        elif word[-1] == "q":
+            temp = word[:-1] + "gh"
+        #nouns: g - "sikik"
+        elif word[-1] == "k":
+            temp = word[:-1] + "g"
+        #noun:e-underlying - "aaggaatae" 
+        elif word[-2:] == "ae":
+            temp = word[:-2] + "e"
+        #vowel final roots: "repa"(N), "aafte"(V)
+        elif word[-1] in ["a", "i", "u", "e"]:
+            temp = word
+        #nouns: te
+        elif word[-1] == "n":
+            temp = word[:-1] + "te"
+        else:
+            temp = word
+        return temp
 
     def simplifyPos(self, pos):
         if "root" in pos:
@@ -248,14 +244,18 @@ class JsonEntry:
                     temproot = re.sub(r'\((.*)\)', '', word)
                     pref = temp.split("/")
                     for x in pref:
-                        search_word.append(temp+temproot)
+                        result.append(temp+temproot)
                 else:
-                    search_word.append(re.sub(r'\(.*\)', '', word))
+                    result.append(re.sub(r'\(.*\)', '', word))
             elif("<sup>e" in word):
-                search_word.append(re.sub(r'\<sup\>e\<\/sup\>', 'e', word))
+                temp = re.sub(r'\<sup\>e\<\/sup\>', 'e', word)
+                result.append(temp)
+                result.reverse()
+            
             word = re.sub(r'\<\/*\w+\>[sef\d]*', '', word)
             word = re.sub(r'[^a-zA-Z]+', '', word)
             result.append(word)
+            #print("result: ", result)
 
         #if("," in latin):
         #    search_word = latin.split(", ")
@@ -302,6 +302,7 @@ if __name__ == "__main__":
                     if len(html_tag_pattern.sub('', entry.latin)) > 0: # addition for catching empty strings with only html tags
                         output = str(JsonEntry(entry).entryObject)
                         print(output, ",", file=f, sep="")
-            if "post" not in sys.argv[1]:
-                print(additions, file=f)
-            print("];", file=f, sep="")
+                if "post" not in sys.argv[1]:
+                    for addition in additions:
+                        print(addition, file=f)
+                print("];", file=f, sep="")
