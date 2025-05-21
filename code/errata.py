@@ -1,29 +1,23 @@
 err = {
-    "bc018a46a6f016bf8a2462980b9d471c30111a93 ":{
+    "bc018a46a6f016bf8a2462980b9d471c30111a93":{
         #fix typo in second gloss somnething > something
         #5/31/2023
         #BH
         "gloss":["to pack", "to store away something"],
     },
-    "5e73e690fa0fff398123727775bec086749cb257":{
+    "182fa1b36b05fdbf82e1f6d4ef630893caa908e8":{
         #headword missing supersript 'e'
         #6/8/2023
         #BH
         "headword":"na<sup>e</sup>",
     },
-    "39884c6387bb701bcb82870d54a4c95731235180 ":{
+    "39884c6387bb701bcb82870d54a4c95731235180":{
         #ending of example mistakenly ended up in notes
         #removed fragment from notes and added to end of example sentence
         #7/30/2023
         #BH
         "notes":[],
         "examples":["<span class='yupik_ex'>Iqallugestun meghmi kiyaghtaqut. Iwernga <i>aghveghet</i> iqallugunghitut.</span><span class='english_ex'>‘Like fish they live in the water however <i>whales</i> are not fish.’ (AANGHHAQ 64)</span>"],
-    },
-    "24439a6532ad3a9f6d52be79e43d9c49348bd091":{
-        #multiple entry headword; removed "nalla"
-        #4/15/2025
-        #BH
-        "headword":"nalla<sup>e</sup>",
     },
     "05f63d62a2dd8ec35e45c0475e6f37edaf12ee25":{
         #remove example "kaziftaa ‘he spun it’"
@@ -64,6 +58,14 @@ err = {
                     "<span class='yupik_ex'>qesighaq</span><span class='english_ex'>‘mist’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> qesiq ‘spittle’)</span></a>",
                     "<span class='yupik_ex'>qiipaghaq</span><span class='english_ex'>‘cloth, cloth cover parka’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> qiipaq)</span></a>",
                     "<span class='yupik_ex'><i>possibly also,</i> ighneghaq</span><span class='english_ex'>‘intestine’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> ighneq ‘son’", "<i>though the semantic connection is not clear)</i></span></a>"]
+    },
+    "6414e8d72d5e7ed7ed87fc9c633a6fea3921c1f9": {
+        #note regarding pos "<i>personal pronoun)</i>"" was at the beginning of examples
+        #moved fragment to notes and changed  "<i>personal pronoun)</i>" > "<i>personal pronoun</i>"
+        #5/21/25
+        #BH
+        "notes": ["<i>personal pronoun</i>"], 
+        "examples": ["<span class='yupik_ex'>ellngitnituq</span><span class='english_ex'>‘he is or has been with them’</span><a href='about.html#exRefs'><span class='citation'>(<i>from</i> ellngitni <i>plus obsolete</i> *etuq <i>from obsolete</i> *ete- ‘to be’)</span></a>"],
     }
 }
 #natmun has incorrect parse > "natmun + natmun"
@@ -74,7 +76,7 @@ err = {
 additions = [
     {
         "UUID":"000001",
-        "search_word":["ughfik"],
+        "search_word":["ughfik", "ughfig"],
         "headword":"ughfik",
         "root":["ughfig"],
         "cyrillic":"уҳфик",
