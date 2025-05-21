@@ -220,6 +220,8 @@ class Entry:
                 self.part_of_speech += '; particle'
             if '<i>adverbial particle:</i> esghaghlleqamken unaami' in example:
                 self.part_of_speech += '; adverbial particle'
+            if '<i>personal pronoun</i>' in example or '<i>personal pronoun base</i>' in example or '<i>personal pronoun)</i>' in example:
+                self.part_of_speech = "pronoun"
 
         if self.latin in ["%(e)nkuk / %(e)nkut", "–fqagh-/–fqaa-", "+fte-/+pete-", "-nkuk / -nkut"]:
             self.latin = re.sub(r'[^<]\/', ',', self.latin)
@@ -293,7 +295,6 @@ class Entry:
         result = result.replace('yu<u>k', 'yu(u)k')
         result = result.replace('iqlumghu-,', 'iqlumghu-')
         result = result.replace('kukugugg,', 'kukugugg')
-        result = result.replace('nallegha,', 'nallegha')
 
         result = result.replace("<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’</span><span class='citation'>or ‘(it is) the end’</span>", "<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’ or ‘(it is) the end’</span>")
         
