@@ -1,7 +1,7 @@
 env
 .idea/
 tmp.xml
-bases_*
-postbases_*
+*.js
 .vscode
 __pycache__
+/data/bases_es.html
