@@ -9,6 +9,7 @@ from redouble_and_convert2ipa import *
 from freq_counts import freqCount
 from errata import err
 from errata import additions
+from related_words import allRelatedWords
 import json
 import pprint
 
@@ -19,7 +20,8 @@ class JsonEntry:
         self.entry.temp = self.entry.latin + self.entry.combined_english_gloss[0]
         self.UUID = hashlib.sha1(bytes(self.entry.temp, 'utf-8'))
 
-        self.entry.headword = self.entry.latin.replace('<b>', '').replace('</b>', '')
+        self.entry.headword = self.headword(self.entry.latin)
+        #self.entry.headword = self.entry.latin.replace('<b>', '').replace('</b>', '')
         self.entry.search = self.searchWord(self.entry.headword)
         first_search_word = self.entry.search[0]
         self.entry.root = self.rootGen(first_search_word)
@@ -46,6 +48,10 @@ class JsonEntry:
         example_list = [f'{self.listFormat(str(example))}' for example in self.entry.examples]
         
         id = self.UUID.hexdigest()
+        #rel = [f'<div class="relate_cont"><span class="related">{word}</span></div>' for word in related_words[id]]
+        rel = []
+        if(id in allRelatedWords):
+            rel = allRelatedWords[id]
 
         self.entryObject = {"UUID":id,
             "search_word":list(set(self.entry.search)),
@@ -66,14 +72,15 @@ class JsonEntry:
             "postbase_head_form":self.entry.postbase_head_form,                     
             "postbase_alphabetization_form":self.entry.postbase_alphabetization_form,
             "alphaA":self.entry.alphabetizationA,
-            "alphaB":self.entry.alphabetizationB
-            }
+            "alphaB":self.entry.alphabetizationB,
+            "related_words":rel
+        }
 
         #trying to introduce errata here
         keyList = ["UUID", "search_word", "headword", "root", "cyrillic", 
          "ipa", "jacobson", "source_pos", "pos", "tags", "gloss", "notes", 
          "examples", "source","etymology", "semantic_code", "postbase_head_form", 
-         "postbase_alphabetization_form", "alphaA", "alphaB"]
+         "postbase_alphabetization_form", "alphaA", "alphaB","related_words"]
         if id in err:
             for key in keyList:
                 if key in err[id]:
@@ -142,7 +149,20 @@ class JsonEntry:
         result = re.sub(r"\n\s*", "", result)
        #result = result.replace("</citation>", "</span>")
         return result
-
+    
+    def headword(self, word):
+        word = word.replace('<b>', '').replace('</b>', '')
+        if word[-3:] == "ae1":
+            return word[0:-2] + "<sup>e1</sup>"
+        if word[-1:] == "1":
+            return word[0:-1] +  "<sup>1</sup>"
+        elif word[-1:] == "2":
+            return word[0:-1] +  "<sup>2</sup>"
+        elif word[-2:] == "ae":
+            return word[0:-1] + "<sup>e</sup>"
+        else:
+            return word
+        
     def phoneticize(self, word):
         temp = tokenize(word)
         temp = redouble(temp)
