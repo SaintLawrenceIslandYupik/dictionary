@@ -223,7 +223,7 @@ class Entry:
             if '<i>personal pronoun</i>' in example or '<i>personal pronoun base</i>' in example or '<i>personal pronoun)</i>' in example:
                 self.part_of_speech = "pronoun"
 
-        if self.latin in ["%(e)nkuk / %(e)nkut", "–fqagh-/–fqaa-", "+fte-/+pete-", "-nkuk / -nkut"]:
+        if self.latin in ["%(e)nkuk / %(e)nkut", "–fqagh-/–fqaa-", "+fte-/+pete-", "-nkuk / -nkut", "regla-/regle-", "regra- / regre-", "legra- / legre-"]:
             self.latin = re.sub(r'[^<]\/', ',', self.latin)
 
         self.examples = [Example(example) for example in self.examples]
