@@ -1,3 +1,8 @@
-venv
+env
 .idea/
 tmp.xml
+*.js
+.vscode
+__pycache__
+/data/bases_es.html
+/embedding

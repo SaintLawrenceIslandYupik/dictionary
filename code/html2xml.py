@@ -45,7 +45,6 @@ class Entry:
         if len(html_entry) != 28:
             raise ValueError("There must be exactly 28 fields, but there were {len(fields)}")
         self._fields = dict(zip(Entry.field_names, list(html_entry)))
-        
         self.latin = self.extract(0)
         self.cyrillic = self.extract(-1)
         self.coded_cyrillic = self.extract(1)
@@ -88,7 +87,6 @@ class Entry:
                     "uya-<sup>2</sup>",	"waak-",	            "yaag-<sup>2</sup>",    "yaag-<sup>3</sup>",
                     "alligh-",          "angatugh-"]
         
-        print(self.latin)
         if ((len(self.examples) > 0 and (self.examples[0] == '<i>demonstrative adverb base</i>' or
                                          self.examples[0] == '<i>demonstrative adverb, localis case' or
                                          self.examples[0] == '<i>extended demonstrative pronoun</i>' or
@@ -101,7 +99,11 @@ class Entry:
             (len(self.examples) > 1 and (self.examples[1] == '<i>extended demonstrative pronoun</i>' or
                                          self.examples[1] == '<i>demonstrative pronoun' or
                                          self.examples[1] == '<i>extended demonstrative pronoun' or
-                                         self.examples[1] == '<i>restricted demonstrative pronoun</i>'))):
+                                         self.examples[1] == '<i>obscured demonstrative pronoun' or
+                                         self.examples[1] == 'obscured demonstrative pronoun' or
+                                         self.examples[1] == '<i>restricted demonstrative pronoun' or
+                                         self.examples[1] == '<i>restricted demonstrative pronoun</i>')) or
+            (len(self.examples) > 2 and (self.examples[2] == '<i>restricted demonstrative pronoun'))):
             self.part_of_speech = "demonstrative"
         elif len(self.examples) > 0 and (self.examples[0] == '<i>essentially a particle</i>' or
                                          self.examples[0] == '<i>particle (?)</i>' or
@@ -188,14 +190,12 @@ class Entry:
             self.part_of_speech = "postural root"
         elif len(self.examples) > 0 and self.examples[0] == '<i>dimensional root</i>':
             self.examples = self.examples[1:]
-            #print(self.latin)
             self.part_of_speech = "dimensional root"
         elif len(self.latin) > 0 and self.latin.replace('<b>', '').replace('</b>', '') in pos_roots:
             self.part_of_speech = "root"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1].isalpha():
             if self.latin[0].isupper():
                 self.part_of_speech = "proper noun"
-                #print(self.latin)
             else:
                 self.part_of_speech = "noun"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[0].isupper():
@@ -220,6 +220,11 @@ class Entry:
                 self.part_of_speech += '; particle'
             if '<i>adverbial particle:</i> esghaghlleqamken unaami' in example:
                 self.part_of_speech += '; adverbial particle'
+            if '<i>personal pronoun</i>' in example or '<i>personal pronoun base</i>' in example or '<i>personal pronoun)</i>' in example:
+                self.part_of_speech = "pronoun"
+
+        if self.latin in ["%(e)nkuk / %(e)nkut", "–fqagh-/–fqaa-", "+fte-/+pete-", "-nkuk / -nkut", "regla-/regle-", "regra- / regre-", "legra- / legre-"]:
+            self.latin = re.sub(r'[^<]\/', ',', self.latin)
 
         self.examples = [Example(example) for example in self.examples]
         self.notes = [Note(example.yupik) for example in self.examples if len(example.english) == 0]
@@ -231,11 +236,16 @@ class Entry:
         self.etymology = self.extract(19)
         self.semantic_code = self.extract(20)
         self.source = self.extract(21)
-        
-        self.alphabetizationA = self.extract(25)
+        self.postbase_head_form = self.extract(23)              # only applies to postbases
+        self.postbase_alphabetization_form = self.extract(24)   # only applies to postbases
+        self.alphabetizationA = self.extract(25)                # only applies to bases
         self.alphabetizationB = self.extract(26)
-        
+        if self.postbase_head_form != '' or self.postbase_alphabetization_form != '':
+            self.word_type = "postbase"
+        else:
+            self.word_type = "base"
 
+        
     @staticmethod
     def replace_english_apostrophe(s):
         import re
@@ -251,6 +261,17 @@ class Entry:
         result = result.strip()
         result = Entry.replace_english_apostrophe(result)
         result = result.replace('\xa0','')
+
+        # Replace Jacobson's PE/PY etymology notation with IPA
+        if index==19:
+            mapping = [('0', '\u0259'),  # LATIN SMALL LETTER SCHWA
+                       ('9', '\u00F0'),  # LATIN LETTER ETH
+                       ('3', '\u0280'),  # LATIN LETTER SMALL CAPITAL R
+                       ('!', '\u0263'),  # LATIN SMALL LETTER GAMMA
+                       ('&', '\u014B'),  # LATIN SMALL LETTER ENG
+                       ('@', '\u026C') ]  # LATIN SMALL LETTER L WITH BELT')
+            for k, v in mapping:
+                result = result.replace(k, v)
         
         result = re.sub(r'<span class="Apple-converted-space">\s*</span>', ' ', result)
         result = re.sub(r'(<span class="s\d{1}">)(.*?)(</span>)', r'\2', result)
@@ -267,7 +288,15 @@ class Entry:
         result = result.replace('"Aa, sakun tagistek?" "Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….', '“Aa, sakun tagistek?” “Qayakun tagikung. <i>Qayughllak</i> nunamnni seghletun kiyaghlleghhiikung, enngaatall umiilegput seghlepiguuq ….”')
         result = result.replace('"Kaay aqsan <i>aafkaghllequq</i>."', '“Kaay aqsan <i>aafkaghllequq</i>.”')
 
+        result = result.replace("+pagaatagh-/~<sub>sf</sub>vagaatagh-", "+pagaatagh-,~<sub>sf</sub>vagaatagh-")
+        result = result.replace("+palluq / ~<sub>f</sub>valluq", "+palluq,~<sub>f</sub>valluq" )
+        result = result.replace("~<sub>sf</sub>–gga-/~<sub>sf</sub>–ghha-","~<sub>sf</sub>–gga-,~<sub>sf</sub>–ghha-")
+
         result = result.replace('yu<u>k', 'yu(u)k')
+        result = result.replace('iqlumghu-,', 'iqlumghu-')
+        result = result.replace('kukugugg,', 'kukugugg')
+
+        result = result.replace("<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’</span><span class='citation'>or ‘(it is) the end’</span>", "<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’ or ‘(it is) the end’</span>")
         
         if result.startswith('</i>') or result.startswith('</b>'):
             result = result[4:]
