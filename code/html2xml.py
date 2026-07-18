@@ -45,8 +45,8 @@ class Entry:
         if len(html_entry) != 28:
             raise ValueError("There must be exactly 28 fields, but there were {len(fields)}")
         self._fields = dict(zip(Entry.field_names, list(html_entry)))
-        self.latin = self.extract(0)
-        self.cyrillic = self.extract(-1)
+        self.latin = self.extract(0).replace('1','¹').replace('2','²').replace('3','³')
+        self.cyrillic = self.extract(-1).replace('1','¹').replace('2','²').replace('3','³')
         self.coded_cyrillic = self.extract(1)
         
         self.raw_examples = self.extract(4)
@@ -199,9 +199,9 @@ class Entry:
             else:
                 self.part_of_speech = "noun"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[0].isupper():
-            self.part_of_speech = "Proper Noun"
+            self.part_of_speech = "proper noun"
         elif len(self.latin) > 0 and self.latin[0] == "<" and self.latin[3].isalpha() and self.latin[3].isupper():
-            self.part_of_speech = "Proper Noun"
+            self.part_of_speech = "proper noun"
         elif len(self.latin) > 0 and self.latin[0].isalpha() and self.latin[-1] == "*":
             self.part_of_speech = "noun"
         elif len(self.latin) > 0 and self.latin.find("<sup>e</sup>") != -1:
@@ -269,7 +269,7 @@ class Entry:
                        ('3', '\u0280'),  # LATIN LETTER SMALL CAPITAL R
                        ('!', '\u0263'),  # LATIN SMALL LETTER GAMMA
                        ('&', '\u014B'),  # LATIN SMALL LETTER ENG
-                       ('@', '\u026C') ]  # LATIN SMALL LETTER L WITH BELT')
+                       ('@', '\u026C') ] # LATIN SMALL LETTER L WITH BELT')
             for k, v in mapping:
                 result = result.replace(k, v)
         
@@ -292,10 +292,14 @@ class Entry:
         result = result.replace("+palluq / ~<sub>f</sub>valluq", "+palluq,~<sub>f</sub>valluq" )
         result = result.replace("~<sub>sf</sub>–gga-/~<sub>sf</sub>–ghha-","~<sub>sf</sub>–gga-,~<sub>sf</sub>–ghha-")
 
+        result = result.replace('megh<e>', 'megh(e)')
+        result = result.replace('negh<e>', 'negh(e)')
+        result = result.replace('ma<t>', 'ma(t)')
         result = result.replace('yu<u>k', 'yu(u)k')
         result = result.replace('iqlumghu-,', 'iqlumghu-')
         result = result.replace('kukugugg,', 'kukugugg')
 
+        
         result = result.replace("<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’</span><span class='citation'>or ‘(it is) the end’</span>", "<span class='yupik_ex'>naanguq</span><span class='english_ex'>‘it is all gone’ or ‘(it is) the end’</span>")
         
         if result.startswith('</i>') or result.startswith('</b>'):
@@ -333,32 +337,55 @@ class Entry:
                 result = result.replace(f" {closing_tag}", f"{closing_tag} ")
                 result = result.replace(f";{closing_tag}", f"{closing_tag};")
 
+
+        result = result.replace('<sub>2</sub>', '₂')
+        result = result.replace('<sub>pl.</sub>', 'ₚₗ')
+        result = result.replace('<sub>pl</sub>', 'ₚₗ')
+        
+        result = result.replace('<sup>e</sup>', 'ᵉ')
+        result = result.replace('<sup>1</sup>', '¹')
+        result = result.replace('<sup>2</sup>', '²')
+        result = result.replace('<sup>3</sup>', '³')
+
+        result = result.replace('<sup>', '')
+        result = result.replace('</sup>', '')
+
+        result = result.replace('<i>', '')
+        result = result.replace('</i>', '')
+        
+        result = result.replace('<b>', '')
+        result = result.replace('</b>', '')
+        
+        result = result.replace('</span>', '')
+
         return result
 
     def __str__(self):
         newline = "\n"
+#            <form script="jacobson">{self.coded_cyrillic}</form>
+#            <form script="latin"   >{self.latin}</form>
+#            <form script="cyrillic">{self.cyrillic}</form>
         return f"""\
     <entry part-of-speech="{self.part_of_speech}">
     
         <forms>
-            <form script="latin"   >{self.latin}</form>
-            <form script="cyrillic">{self.cyrillic}</form>
-            <form script="jacobson">{self.coded_cyrillic}</form>
+{newline.join(['            <form script="latin"   >'+ form.replace('ae', 'aᵉ') + '</form>' for form in self.latin.split(', ')])}
+{newline.join(['            <form script="cyrillic">'+ form + '</form>' for form in self.cyrillic.split(', ')])}
         </forms>
     
         <glosses>
 {newline.join(['            <gloss lang="eng">' + gloss + '</gloss>' for gloss in self.combined_english_gloss])}
         </glosses>
 
-        <notes>{(newline + newline.join([str(e) for e in self.notes])) if len(self.notes) > 0 else ""}
+        <notes>{(newline + newline.join([str(e) for e in self.notes])).replace('< ', '&lt; ') if len(self.notes) > 0 else ""}
         </notes>
 
         <examples>{(newline + newline + newline.join([str(e) for e in self.examples])) if len(self.examples) > 0 else ""}
         </examples>
         
-        <source>{self.source}</source>
+        <source>{self.source.replace('< ', '&lt; ')}</source>
         
-        <etymology>{self.etymology.replace('< ', '&lt; ')}</etymology>
+        <etymology>{self.etymology.replace('< ', '&lt; ').replace('<', '&lt;')}</etymology>
         
         <semantic-code>{self.semantic_code}</semantic-code>
         
@@ -496,13 +523,17 @@ if __name__ == "__main__":
     else:
         dictionary = HtmlDictionary(filename=sys.argv[1])
         if len(sys.argv) == 2 or (len(sys.argv) == 3 and sys.argv[2] == '-'):
+            print("<entries>\n")
             for html_entry in dictionary:
                 entry = Entry(html_entry)
                 if len(entry.latin) > 0:
                     print(entry)
+            print("</entries>")
         else:
             with open(sys.argv[2], 'wt') as xml:
+                print("<entries>\n", file=xml)
                 for html_entry in dictionary:
                     entry = Entry(html_entry)
                     if len(entry.latin) > 0:
                         print(entry, file=xml)
+                print("</entries>", file=xml)
