@@ -50,7 +50,7 @@ class Entry:
         self.coded_cyrillic = self.extract(1)
         
         self.raw_examples = self.extract(4)
-        self.examples = self.raw_examples.strip().replace(' / ', '; ').split("; ") if len(self.raw_examples) > 0 else []
+        self.examples = self.raw_examples.strip().replace(' / ', '\t').split("\t") if len(self.raw_examples) > 0 else []
         self.examples = [e.strip() for e in self.examples if len(e.strip()) > 0]
 
         pos_roots = ["aagyug-",	        "afte-",	            "aghpu-",	            "aghqe-<sup>2</sup>",
@@ -261,6 +261,22 @@ class Entry:
         result = result.strip()
         result = Entry.replace_english_apostrophe(result)
         result = result.replace('\xa0','')
+        
+        result = result.replace(' & ', ' &amp; ')
+        result = result.replace('& ', '&amp; ')
+        result = result.replace('&<', '&amp;<')
+        result = result.replace('A &W','A &amp; W')
+        result = result.replace('A& W','A &amp; W')
+        result = result.replace('A&W', 'A &amp; W')
+        result = result.replace('E&V', 'E &amp; V')
+        result = result.replace('V&E', 'V &amp; E')
+        result = result.replace('V &E','V &amp; E')
+        result = result.replace('V& E','V &amp; E')
+        
+        #result = re.sub(r'&amp$', '&amp;', result)
+        
+#       result = result.replace('V &amp; E', 'V &amp; E')
+
 
         # Replace Jacobson's PE/PY etymology notation with IPA
         if index==19:
@@ -306,6 +322,9 @@ class Entry:
             result = result[4:]
         elif result.startswith('</sup>') or result.startswith('</sub>'):
             result = result[6:]
+
+        if result.endswith('&amp'):
+          result.append(';')
 
         for tag in ['sup', 'sub', 'i', 'b']:
             opening_tag = f"<{tag}>"
